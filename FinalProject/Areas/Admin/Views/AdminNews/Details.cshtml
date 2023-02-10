@@ -1,115 +1,145 @@
 ﻿@model FinalProject.Models.News
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi tiết tin tức :" + Model.Title;
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h1>Details</h1>
+<div class="page-header">
+    <div class="header-sub-title">
+        <nav class="breadcrumb breadcrumb-dash">
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Trang chủ</a>
+            <a asp-area="Admin" asp-controller="AdminTinDangs" asp-action="Index" class="breadcrumb-item">Danh sách tin tức</a>
+            <span class="breadcrumb-item active">Danh mục : @Model.Title</span>
+        </nav>
+    </div>
+</div>
+
+<div class="page-header no-gutters has-tab">
+    <div class="d-md-flex m-b-15 align-items-center justify-content-between">
+        <div class="media align-items-center m-b-15">
+            <div class="avatar avatar-image rounded" style="height:70px; width:70px">
+                <img src="~/images/news/@Model.Thumb" alt="@Model.Title" />
+            </div>
+            <div class="m-l-15">
+                <h4 class="m-b-0">@Model.Title</h4>
+                <p class="text-muted m-b-0">ID: #@Model.PostId</p>
+            </div>
+        </div>
+        <div class="m-b-15">
+            <a class="btn btn-primary" asp-area="Admin" asp-controller="AdminNews" asp-action="Edit" asp-route-id="@Model.PostId">Sửa đổi</a>
+        </div>
+    </div>
+</div>
 
 <div>
-    <h4>News</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Title)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Title)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Scontents)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Scontents)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Contents)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Contents)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Thumb)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Thumb)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Published)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Published)
-        </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Alias)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Alias)
         </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.CreatedDate)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.CreatedDate)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Author)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Published)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Author)
+        <dd class="col-sm-10">
+            @if (Model.Published)
+            {
+                <div class="switch m-r-10">
+                    <input type="checkbox" id="switch-1" checked="" disabled />
+                    <label for="switch-1"></label>
+                </div>
+            }
+            else
+            {
+                <div class="switch m-r-10">
+                    <input type="checkbox" id="switch-1" disabled />
+                    <label for="switch-1"></label>
+                </div>
+            }
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AccountId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AccountId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Tags)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Tags)
-        </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.IsHot)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsHot)
+        <dd class="col-sm-10">
+            @if (Model.IsHot)
+            {
+                <div class="switch m-r-10">
+                    <input type="checkbox" id="switch-1" checked="" disabled />
+                    <label for="switch-1"></label>
+                </div>
+            }
+            else
+            {
+                <div class="switch m-r-10">
+                    <input type="checkbox" id="switch-1" disabled />
+                    <label for="switch-1"></label>
+                </div>
+            }
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.IsNewfeed)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsNewfeed)
+        <dd class="col-sm-10">
+            @if (Model.IsNewfeed)
+            {
+                <div class="switch m-r-10">
+                    <input type="checkbox" id="switch-1" checked="" disabled />
+                    <label for="switch-1"></label>
+                </div>
+            }
+            else
+            {
+                <div class="switch m-r-10">
+                    <input type="checkbox" id="switch-1" disabled />
+                    <label for="switch-1"></label>
+                </div>
+            }
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.MetaKey)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.MetaKey)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.MetaDesc)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.MetaDesc)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Views)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Views)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Cat)
+    </dl>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Contents)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Cat.CatId)
+        <dd class="col-sm-10">
+            @Html.Raw(Model.Contents)
         </dd>
     </dl>
+
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.PostId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+

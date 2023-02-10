@@ -7,39 +7,39 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FinalProject.Models;
 using PagedList.Core;
-using FinalProject.Helpper;
-using System.IO;
 using AspNetCoreHero.ToastNotification.Abstractions;
+using System.IO;
+using FinalProject.Helpper;
 
 namespace FinalProject.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class AdminPagesController : Controller
+    public class AdminCategoriesController : Controller
     {
         private readonly FinalProjectContext _context;
         public INotyfService _notyfService { get; }
 
-        public AdminPagesController(FinalProjectContext context, INotyfService notyfService)
+        public AdminCategoriesController(FinalProjectContext context, INotyfService notyfService)
         {
             _context = context;
             _notyfService = notyfService;
         }
 
-        // GET: Admin/AdminPages
+        // GET: Admin/AdminCategories
         public IActionResult Index(int? page)
         {
             var pageNumber = page == null || page <= 0 ? 1 : page.Value;
             var pageSize = 20;
-            var lsPages = _context.Pages
+            var lsCategory = _context.Categories
                 .AsNoTracking()
-                .OrderBy(x => x.PageId);
-            PagedList<Page> models = new PagedList<Page>(lsPages, pageNumber, pageSize);
+                .OrderBy(x => x.CatId);
+            PagedList<Category> models = new PagedList<Category>(lsCategory, pageNumber, pageSize);
 
             ViewBag.CurrentPage = pageNumber;
             return View(models);
         }
 
-        // GET: Admin/AdminPages/Details/5
+        // GET: Admin/AdminCategories/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -47,48 +47,48 @@ namespace FinalProject.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var page = await _context.Pages
-                .FirstOrDefaultAsync(m => m.PageId == id);
-            if (page == null)
+            var category = await _context.Categories
+                .FirstOrDefaultAsync(m => m.CatId == id);
+            if (category == null)
             {
                 return NotFound();
             }
 
-            return View(page);
+            return View(category);
         }
 
-        // GET: Admin/AdminPages/Create
+        // GET: Admin/AdminCategories/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Admin/AdminPages/Create
+        // POST: Admin/AdminCategories/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PageId,PageName,Contents,Thumb,Published,Title,MetaDesc,MetaKey,Alias,CreatedDate,Ordering")] Page page, Microsoft.AspNetCore.Http.IFormFile fThumb)
+        public async Task<IActionResult> Create([Bind("CatId,CatName,Description,ParentId,Levels,Ordering,Published,Thumb,Title,Alias,MetaDesc,MetaKey,Cover,SchemaMarkup")] Category category, Microsoft.AspNetCore.Http.IFormFile fThumb)
         {
             if (ModelState.IsValid)
             {
                 if (fThumb != null)
                 {
                     string extension = Path.GetExtension(fThumb.FileName);
-                    string imageName = Utilities.SEOUrl(page.PageName) + extension;
-                    page.Thumb = await Utilities.UploadFile(fThumb, @"pages", imageName.ToLower());
+                    string imageName = Utilities.SEOUrl(category.CatName) + extension;
+                    category.Thumb = await Utilities.UploadFile(fThumb, @"category", imageName.ToLower());
                 }
-                if (string.IsNullOrEmpty(page.Thumb)) page.Thumb = "default.jpg";
-                page.Alias = Utilities.SEOUrl(page.PageName);
-                _context.Add(page);
+                if (string.IsNullOrEmpty(category.Thumb)) category.Thumb = "default.jpg";
+                category.Alias = Utilities.SEOUrl(category.CatName);
+                _context.Add(category);
                 await _context.SaveChangesAsync();
                 _notyfService.Success("Thêm mới thành công");
                 return RedirectToAction(nameof(Index));
             }
-            return View(page);
+            return View(category);
         }
 
-        // GET: Admin/AdminPages/Edit/5
+        // GET: Admin/AdminCategories/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -96,22 +96,22 @@ namespace FinalProject.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var page = await _context.Pages.FindAsync(id);
-            if (page == null)
+            var category = await _context.Categories.FindAsync(id);
+            if (category == null)
             {
                 return NotFound();
             }
-            return View(page);
+            return View(category);
         }
 
-        // POST: Admin/AdminPages/Edit/5
+        // POST: Admin/AdminCategories/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PageId,PageName,Contents,Thumb,Published,Title,MetaDesc,MetaKey,Alias,CreatedDate,Ordering")] Page page, Microsoft.AspNetCore.Http.IFormFile fThumb)
+        public async Task<IActionResult> Edit(int id, [Bind("CatId,CatName,Description,ParentId,Levels,Ordering,Published,Thumb,Title,Alias,MetaDesc,MetaKey,Cover,SchemaMarkup")] Category category, Microsoft.AspNetCore.Http.IFormFile fThumb)
         {
-            if (id != page.PageId)
+            if (id != category.CatId)
             {
                 return NotFound();
             }
@@ -123,18 +123,17 @@ namespace FinalProject.Areas.Admin.Controllers
                     if (fThumb != null)
                     {
                         string extension = Path.GetExtension(fThumb.FileName);
-                        string imageName = Utilities.SEOUrl(page.PageName) + extension;
-                        page.Thumb = await Utilities.UploadFile(fThumb, @"pages", imageName.ToLower());
+                        string imageName = Utilities.SEOUrl(category.CatName) + extension;
+                        category.Thumb = await Utilities.UploadFile(fThumb, @"category", imageName.ToLower());
                     }
-                    if (string.IsNullOrEmpty(page.Thumb)) page.Thumb = "default.jpg";
-                    page.Alias = Utilities.SEOUrl(page.PageName);
-                    _context.Update(page);
+                    if (string.IsNullOrEmpty(category.Thumb)) category.Thumb = "default.jpg";
+                    _context.Update(category);
                     await _context.SaveChangesAsync();
-                    _notyfService.Success("Cập nhật thành công");
+                    _notyfService.Success("Chỉnh sửa thành công");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PageExists(page.PageId))
+                    if (!CategoryExists(category.CatId))
                     {
                         return NotFound();
                     }
@@ -145,10 +144,10 @@ namespace FinalProject.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(page);
+            return View(category);
         }
 
-        // GET: Admin/AdminPages/Delete/5
+        // GET: Admin/AdminCategories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -156,31 +155,31 @@ namespace FinalProject.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var page = await _context.Pages
-                .FirstOrDefaultAsync(m => m.PageId == id);
-            if (page == null)
+            var category = await _context.Categories
+                .FirstOrDefaultAsync(m => m.CatId == id);
+            if (category == null)
             {
                 return NotFound();
             }
 
-            return View(page);
+            return View(category);
         }
 
-        // POST: Admin/AdminPages/Delete/5
+        // POST: Admin/AdminCategories/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var page = await _context.Pages.FindAsync(id);
-            _context.Pages.Remove(page);
+            var category = await _context.Categories.FindAsync(id);
+            _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
             _notyfService.Success("Xóa thành công");
             return RedirectToAction(nameof(Index));
         }
 
-        private bool PageExists(int id)
+        private bool CategoryExists(int id)
         {
-            return _context.Pages.Any(e => e.PageId == id);
+            return _context.Categories.Any(e => e.CatId == id);
         }
     }
 }

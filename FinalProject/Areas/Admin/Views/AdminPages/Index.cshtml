@@ -2,9 +2,11 @@
 @model PagedList.Core.IPagedList<FinalProject.Models.Page>
 
 
-@{ int CurrentPage = ViewBag.CurrentPage;
+@{ 
+    int CurrentPage = ViewBag.CurrentPage;
     ViewData["Title"] = "Danh sách Page" + CurrentPage;
-    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml"; }
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml"; 
+}
 
 
 <div class="page-header">

@@ -19,8 +19,8 @@ namespace FinalProject.Models
         public int? AccountId { get; set; }
         public string Tags { get; set; }
         public int? CatId { get; set; }
-        public bool? IsHot { get; set; }
-        public bool? IsNewfeed { get; set; }
+        public bool IsHot { get; set; }
+        public bool IsNewfeed { get; set; }
         public string MetaKey { get; set; }
         public string MetaDesc { get; set; }
         public int? Views { get; set; }
