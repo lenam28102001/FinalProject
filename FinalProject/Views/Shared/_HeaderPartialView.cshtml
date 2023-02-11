@@ -18,7 +18,7 @@
                             <li>
                                 <i class="fa fa-mobile" style=" font-size: 20px; display: inline-block; position: relative; transform: translateY(2px); "></i>
                                 Liên hệ nhanh
-                                <a href="tel:0963102916">096.310.2916</a>
+                                <a href="tel:012345678">012.345.678</a>
                             </li>
                             <li>
 
@@ -30,7 +30,7 @@
                     <div class="header-top text-matterhorn">
                         <p class="shipping mb-0">
                             <i class="fa fa-map-marker" aria-hidden="true"></i>
-                            Địa chỉ:24/52 Yên Lạc, Hai Bà Trưng, Hà Nội
+                            Địa chỉ: 130 Ông Ích Đường, Cẩm Lệ, Đà Nẵng
                         </p>
                     </div>
                 </div>
@@ -48,32 +48,31 @@
                 <div class="col-lg-12">
                     <div class="header-middle-wrap">
                         <a href="/" class="header-logo">
-                            <img src="~/assets/images/logo/dark.png" alt="Shop hoa quả">
+                            <img src="~/assets/images/_Aesthetic Minimalist Signature Logo Makeup Studio Brush (1).png" width="250" height="200" alt="Shop quần áo">
                         </a>
                         <div class="header-search-area d-none d-lg-block">
                             <form class="header-searchbox">
-                                    <input id="keyword" name="keyword" class="input-field" type="text" placeholder="Tìm kiếm sản phẩm">
-                                    <button class="btn btn-outline-whisper btn-primary-hover" type="submit"><i class="pe-7s-search"></i></button>
-                                </form>
-                                <div id="records_table" class="results-box">
-
-                                </div>
+                                <input id="keyword" name="keyword" class="input-field" type="text" placeholder="Tìm kiếm sản phẩm">
+                                <button class="btn btn-outline-whisper btn-primary-hover" type="submit"><i class="pe-7s-search"></i></button>
+                            </form>
+                            <div id="records_table" class="results-box">
+                            </div>
 
 
                             @*<div>
-                                    <i class="prefix-icon anticon anticon-search opacity-04"></i>
-                                    <input id="keyword" name="keyword" type="text" class="form-control" placeholder="Tìm kiếm sản phẩm">
+                                <i class="prefix-icon anticon anticon-search opacity-04"></i>
+                                <input id="keyword" name="keyword" type="text" class="form-control" placeholder="Tìm kiếm sản phẩm">
                                 </div>
                                 <div class="table-responsive">
-                                    <table class="table table-hover e-commerce-table">
-                                        <tbody id="records_table">
+                                <table class="table table-hover e-commerce-table">
+                                <tbody id="records_table">
 
-                                        </tbody>
+                                </tbody>
 
-                                    </table>
+                                </table>
                                 </div>*@
 
-                            
+
 
 
 
@@ -109,7 +108,7 @@
                                     </a>
                                 </li>
                                 <li id="numberCart" class="minicart-wrap me-3 me-lg-0">
-                                   @*@await Component.InvokeAsync("NumberCart")*@
+                                    @*@await Component.InvokeAsync("NumberCart")*@
                                 </li>
                                 <li class="mobile-menu_wrap d-block d-lg-none">
                                     <a href="#mobileMenu" class="mobile-menu_btn toolbar-btn pl-0">
@@ -473,7 +472,7 @@
         </div>
     </div>
     <div class="offcanvas-minicart_wrapper" id="miniCart">
-       @* @await Component.InvokeAsync("HeaderCart")*@
+        @* @await Component.InvokeAsync("HeaderCart")*@
     </div>
     <div class="global-overlay"></div>
 </header>
@@ -481,23 +480,23 @@
 @section Scripts{
     @*<script>*@
         @*$(document).ready(function () {
-            $("#keyword").keyup(function () {
-            var strkeyword = $('#keyword').val();
-            $.ajax({
-                url: '/Search/FindProduct/',
-                datatype: "json",
-                type: "POST",
-                data: { keyword: strkeyword },
-                async: true,
-                success: function (results) {
-                    $("#records_table").html("");
-                    $("#records_table").html(results);
-                },
-                error: function (xhr) {
-                    alert('error');
-                }
-            });
-        });
-        });*@
+    $("#keyword").keyup(function () {
+    var strkeyword = $('#keyword').val();
+    $.ajax({
+    url: '/Search/FindProduct/',
+    datatype: "json",
+    type: "POST",
+    data: { keyword: strkeyword },
+    async: true,
+    success: function (results) {
+    $("#records_table").html("");
+    $("#records_table").html(results);
+    },
+    error: function (xhr) {
+    alert('error');
+    }
+    });
+    });
+    });*@
 
 }

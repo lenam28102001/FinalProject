@@ -2,10 +2,10 @@
 @model PagedList.Core.IPagedList<FinalProject.Models.Page>
 
 
-@{ 
+@{
     int CurrentPage = ViewBag.CurrentPage;
     ViewData["Title"] = "Danh sách Page" + CurrentPage;
-    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml"; 
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
 
@@ -24,7 +24,6 @@
                 <a class="btn btn-primary" asp-area="Admin" asp-controller="AdminPages" asp-action="Create"><i class="anticon anticon-plus-circle m-r-5"></i><span>Thêm Page</span></a>
             </div>
             <div class="col-lg-4 text-right">
-                
             </div>
         </div>
 
@@ -44,34 +43,37 @@
                         foreach (var item in Model)
                         {
                             string url = $"/page/{item.Alias}";
-        <tr>
-            <td>@item.PageId</td>
-            <td><a target="_blank" href="@url">@item.PageName</a></td>
-            <td>
-                @if (item.Published == true)
-                {
+                            <tr>
+                                <td>@item.PageId</td>
+                                <td><a target="_blank" href="@url">@item.PageName</a></td>
+                                <td>
+                                    @if (item.Published == true)
+                                    {
 
 
-    <div class="d-flex align-items-center">
-        <div class="badge badge-success badge-dot m-r-10"></div>
-        <div>Public</div>
-    </div> }
-else
-{
-    <div class="d-flex align-items-center">
-        <div class="badge badge-success badge-dot m-r-10"></div>
-        <div>Non-Public</div>
-    </div>}
+                                        <div class="d-flex align-items-center">
+                                            <div class="badge badge-success badge-dot m-r-10"></div>
+                                            <div>Public</div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="d-flex align-items-center">
+                                            <div class="badge badge-success badge-dot m-r-10"></div>
+                                            <div>Non-Public</div>
+                                        </div>
+                                    }
 
 
-            </td>
+                                </td>
 
-            <td>
-                <a class="btn btn-primary btn-tone m-r-5" asp-area="Admin" asp-controller="AdminPages" asp-action="Details" asp-route-id="@item.PageId">Chi tiết</a>
-                <a class="btn btn-secondary btn-tone m-r-5" asp-area="Admin" asp-controller="AdminPages" asp-action="Edit" asp-route-id="@item.PageId">Sửa</a>
-                <a class="btn btn-success btn-tone m-r-5" asp-area="Admin" asp-controller="AdminPages" asp-action="Delete" asp-route-id="@item.PageId">Xóa</a>
-            </td>
-        </tr>}
+                                <td>
+                                    <a class="btn btn-primary btn-tone m-r-5" asp-area="Admin" asp-controller="AdminPages" asp-action="Details" asp-route-id="@item.PageId">Chi tiết</a>
+                                    <a class="btn btn-secondary btn-tone m-r-5" asp-area="Admin" asp-controller="AdminPages" asp-action="Edit" asp-route-id="@item.PageId">Sửa</a>
+                                    <a class="btn btn-success btn-tone m-r-5" asp-area="Admin" asp-controller="AdminPages" asp-action="Delete" asp-route-id="@item.PageId">Xóa</a>
+                                </td>
+                            </tr>
+                        }
                     }
 
                 </tbody>

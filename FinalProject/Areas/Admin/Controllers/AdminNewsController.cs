@@ -28,6 +28,7 @@ namespace FinalProject.Areas.Admin.Controllers
         public IActionResult Index(int? page)
         {
             var collection = _context.News.AsNoTracking().ToList();
+
             foreach (var item in collection)
             {
                 if (item.CreatedDate == null)
