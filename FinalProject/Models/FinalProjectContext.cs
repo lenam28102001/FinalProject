@@ -28,6 +28,7 @@ namespace FinalProject.Models
         public virtual DbSet<OrderDetail> OrderDetails { get; set; }
         public virtual DbSet<Page> Pages { get; set; }
         public virtual DbSet<Product> Products { get; set; }
+        public virtual DbSet<QuangCao> QuangCaos { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<Shipper> Shippers { get; set; }
         public virtual DbSet<TransactStatus> TransactStatuses { get; set; }
@@ -305,6 +306,23 @@ namespace FinalProject.Models
                     .WithMany(p => p.Products)
                     .HasForeignKey(d => d.CatId)
                     .HasConstraintName("FK_Products_Categories");
+            });
+
+            modelBuilder.Entity<QuangCao>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("QuangCao");
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.QuangCaoId).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.SubTitle).HasMaxLength(255);
+
+                entity.Property(e => e.Title).HasMaxLength(255);
+
+                entity.Property(e => e.UrlLink).HasMaxLength(255);
             });
 
             modelBuilder.Entity<Role>(entity =>

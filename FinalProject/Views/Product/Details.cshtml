@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = Model.Title;
     Layout = "~/Views/Shared/_Layout.cshtml";
+    List<Product> lsProducts = ViewBag.SanPham;
 }
 
 <!-- Begin Main Content Area  -->
@@ -38,17 +39,22 @@
                                 </div>
                                 <div class="swiper-slide">
                                     <a href="~/assets/images/product/large-size/2-2-555x645.jpg" class="single-img gallery-popup">
-                                        <img class="img-full" src="~/assets/images/product/large-size/2-2-555x645.jpg" alt="Product Image">
+                                        <img class="img-full" src="~/images/products/@Model.Thumb" alt="@Model.Title">
                                     </a>
                                 </div>
                                 <div class="swiper-slide">
                                     <a href="~/assets/images/product/large-size/2-3-555x645.jpg" class="single-img gallery-popup">
-                                        <img class="img-full" src="~/assets/images/product/large-size/2-3-555x645.jpg" alt="Product Image">
+                                        <img class="img-full" src="~/images/products/@Model.Thumb" alt="@Model.Title">
                                     </a>
                                 </div>
                                 <div class="swiper-slide">
                                     <a href="~/assets/images/product/large-size/2-4-555x645.jpg" class="single-img gallery-popup">
-                                        <img class="img-full" src="~/assets/images/product/large-size/2-4-555x645.jpg" alt="Product Image">
+                                        <img class="img-full" src="~/images/products/@Model.Thumb" alt="Product Image">
+                                    </a>
+                                </div>
+                                <div class="swiper-slide">
+                                    <a href="~/assets/images/product/large-size/2-4-555x645.jpg" class="single-img gallery-popup">
+                                        <img class="img-full" src="~/images/products/@Model.Thumb" alt="Product Image">
                                     </a>
                                 </div>
                             </div>
@@ -102,24 +108,22 @@
                                         </li>
                                     </ul>
                                 </div>
-                                
-                                
                             </div>
                         </div>
                         <div class="col-12 order-lg-2 order-1 pt-10 pt-lg-0">
                             <div class="swiper-container single-product-thumbs">
                                 <div class="swiper-wrapper">
                                     <a href="javascript:void(0)" class="swiper-slide">
-                                        <img class="img-full" src="~/assets/images/product/large-size/2-1-555x645.jpg" alt="Product Thumnail">
+                                        <img class="img-full" src="~/images/products/@Model.Thumb" alt="Product Thumnail">
                                     </a>
                                     <a href="javascript:void(0)" class="swiper-slide">
-                                        <img class="img-full" src="~/assets/images/product/large-size/2-2-555x645.jpg" alt="Product Thumnail">
+                                        <img class="img-full" src="~/images/products/@Model.Thumb" alt="Product Thumnail">
                                     </a>
                                     <a href="javascript:void(0)" class="swiper-slide">
-                                        <img class="img-full" src="~/assets/images/product/large-size/2-3-555x645.jpg" alt="Product Thumnail">
+                                        <img class="img-full" src="~/images/products/@Model.Thumb" alt="Product Thumnail">
                                     </a>
                                     <a href="javascript:void(0)" class="swiper-slide">
-                                        <img class="img-full" src="~/assets/images/product/large-size/2-4-555x645.jpg" alt="Product Thumnail">
+                                        <img class="img-full" src="~/images/products/@Model.Thumb" alt="Product Thumnail">
                                     </a>
                                 </div>
                             </div>
@@ -318,7 +322,7 @@
                 <div class="col-lg-12">
                     <div class="swiper-slider-holder swiper-arrow">
                         <div class="swiper-container product-slider border-issue">
-                            @*<div class="swiper-wrapper">
+                            <div class="swiper-wrapper">
                                 @if (lsProducts != null)
                                 {
                                     foreach (var item in lsProducts)
@@ -370,7 +374,7 @@
                                     }
                                 }
 
-                            </div>*@
+                            </div>
                         </div>
                         <!-- Add Arrows -->
                         <div class="swiper-button-next"></div>
@@ -414,23 +418,23 @@
             });
 
             @*$(".removecart").click(function () {
-                var productid = $(this).attr("data-productid");
-                $.ajax({
-                    url: "api/cart/remove",
-                    type: "POST",
-                    dataType: "JSON",
-                    data: { productID: productid },
-                    success: function (result) {
-                        if (result.success) {
-                            loadHeaderCart();//Reload lai gio hang
-                            location.reload();
-                        }
-                    },
-                    error: function (rs) {
-                        alert("Remove Cart Error !")
-                    }
-                });
-            });*@
+                            var productid = $(this).attr("data-productid");
+                            $.ajax({
+                                url: "api/cart/remove",
+                                type: "POST",
+                                dataType: "JSON",
+                                data: { productID: productid },
+                                success: function (result) {
+                                    if (result.success) {
+                                        loadHeaderCart();//Reload lai gio hang
+                                        location.reload();
+                                    }
+                                },
+                                error: function (rs) {
+                                    alert("Remove Cart Error !")
+                                }
+                            });
+                        });*@
         });
         function loadHeaderCart() {
             $('#miniCart').load("/AjaxContent/HeaderCart");
