@@ -1,5 +1,6 @@
 using AspNetCoreHero.ToastNotification;
 using FinalProject.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,6 +33,16 @@ namespace FinalProject
             services.AddDbContext<FinalProjectContext>(options => options.UseSqlServer(connectString));
 
             services.AddSingleton<HtmlEncoder>(HtmlEncoder.Create(allowedRanges: new[] { UnicodeRanges.All }));
+            services.AddSession();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+               .AddCookie(p =>
+               {
+                   p.Cookie.Name = "UserLoginCookie";
+                   p.ExpireTimeSpan = TimeSpan.FromDays(1);
+                    //p.LoginPath = "/dang-nhap.html";
+                    //p.LogoutPath = "/dang-xuat/html";
+                    p.AccessDeniedPath = "/not-found.html";
+               });
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
             services.AddNotyf(config =>
@@ -57,10 +68,12 @@ namespace FinalProject
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseSession();
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
+
 
             app.UseEndpoints(endpoints =>
             {
