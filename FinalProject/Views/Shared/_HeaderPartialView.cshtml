@@ -59,18 +59,7 @@
                             </div>
 
 
-                            @*<div>
-                                <i class="prefix-icon anticon anticon-search opacity-04"></i>
-                                <input id="keyword" name="keyword" type="text" class="form-control" placeholder="Tìm kiếm sản phẩm">
-                                </div>
-                                <div class="table-responsive">
-                                <table class="table table-hover e-commerce-table">
-                                <tbody id="records_table">
 
-                                </tbody>
-
-                                </table>
-                                </div>*@
                         </div>
                         <div class="header-right">
                             <ul>
@@ -102,7 +91,7 @@
                                     </a>
                                 </li>
                                 <li id="numberCart" class="minicart-wrap me-3 me-lg-0">
-                                    @*@await Component.InvokeAsync("NumberCart")*@
+                                    @await Component.InvokeAsync("NumberCart")
                                 </li>
                                 <li class="mobile-menu_wrap d-block d-lg-none">
                                     <a href="#mobileMenu" class="mobile-menu_btn toolbar-btn pl-0">
@@ -466,7 +455,7 @@
         </div>
     </div>
     <div class="offcanvas-minicart_wrapper" id="miniCart">
-        @* @await Component.InvokeAsync("HeaderCart")*@
+         @await Component.InvokeAsync("HeaderCart")
     </div>
     <div class="global-overlay"></div>
 </header>
@@ -474,23 +463,23 @@
 @section Scripts{
     @*<script>*@
         @*$(document).ready(function () {
-    $("#keyword").keyup(function () {
-    var strkeyword = $('#keyword').val();
-    $.ajax({
-    url: '/Search/FindProduct/',
-    datatype: "json",
-    type: "POST",
-    data: { keyword: strkeyword },
-    async: true,
-    success: function (results) {
-    $("#records_table").html("");
-    $("#records_table").html(results);
-    },
-    error: function (xhr) {
-    alert('error');
-    }
-    });
-    });
-    });*@
+            $("#keyword").keyup(function () {
+            var strkeyword = $('#keyword').val();
+            $.ajax({
+                url: '/Search/FindProduct/',
+                datatype: "json",
+                type: "POST",
+                data: { keyword: strkeyword },
+                async: true,
+                success: function (results) {
+                    $("#records_table").html("");
+                    $("#records_table").html(results);
+                },
+                error: function (xhr) {
+                    alert('error');
+                }
+            });
+        });
+        });*@
 
 }

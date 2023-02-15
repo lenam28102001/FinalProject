@@ -15,7 +15,10 @@ namespace FinalProject.Models
         public int? Discount { get; set; }
         public int? Total { get; set; }
         public DateTime? ShipDate { get; set; }
+        public DateTime? CreateDate { get; set; }
+        public int? Price { get; set; }
 
         public virtual Order Order { get; set; }
+        public virtual Product Product { get; set; }
     }
 }

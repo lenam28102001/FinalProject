@@ -28,7 +28,6 @@ namespace FinalProject.Models
         public DateTime? LastLogin { get; set; }
         public bool Active { get; set; }
 
-        public virtual Location Location { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
     }
 }

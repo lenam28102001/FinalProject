@@ -30,7 +30,6 @@ namespace FinalProject.Areas.Admin.Controllers
             var pageSize = 20;
             var lsCustomers = _context.Customers
                 .AsNoTracking()
-                .Include(x=> x.Location)
                 .OrderByDescending(x => x.CreateDate);
             PagedList<Customer> models = new PagedList<Customer>(lsCustomers, pageNumber, pageSize);
 
@@ -47,7 +46,6 @@ namespace FinalProject.Areas.Admin.Controllers
             }
 
             var customer = await _context.Customers
-                .Include(c => c.Location)
                 .FirstOrDefaultAsync(m => m.CustomerId == id);
             if (customer == null)
             {
@@ -145,7 +143,6 @@ namespace FinalProject.Areas.Admin.Controllers
             }
 
             var customer = await _context.Customers
-                .Include(c => c.Location)
                 .FirstOrDefaultAsync(m => m.CustomerId == id);
             if (customer == null)
             {

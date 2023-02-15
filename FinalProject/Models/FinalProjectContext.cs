@@ -145,8 +145,6 @@ namespace FinalProject.Models
 
                 entity.Property(e => e.LastLogin).HasColumnType("datetime");
 
-                entity.Property(e => e.LocationId).HasColumnName("LocationID");
-
                 entity.Property(e => e.Password).HasMaxLength(50);
 
                 entity.Property(e => e.Phone)
@@ -156,11 +154,6 @@ namespace FinalProject.Models
                 entity.Property(e => e.Salt)
                     .HasMaxLength(8)
                     .IsFixedLength(true);
-
-                entity.HasOne(d => d.Location)
-                    .WithMany(p => p.Customers)
-                    .HasForeignKey(d => d.LocationId)
-                    .HasConstraintName("FK_Customers_Locations");
             });
 
             modelBuilder.Entity<Location>(entity =>
@@ -245,6 +238,8 @@ namespace FinalProject.Models
             {
                 entity.Property(e => e.OrderDetailId).HasColumnName("OrderDetailID");
 
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
                 entity.Property(e => e.OrderId).HasColumnName("OrderID");
 
                 entity.Property(e => e.ProductId).HasColumnName("ProductID");
@@ -255,6 +250,11 @@ namespace FinalProject.Models
                     .WithMany(p => p.OrderDetails)
                     .HasForeignKey(d => d.OrderId)
                     .HasConstraintName("FK_OrderDetails_Orders");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.OrderDetails)
+                    .HasForeignKey(d => d.ProductId)
+                    .HasConstraintName("FK_OrderDetails_Products");
             });
 
             modelBuilder.Entity<Page>(entity =>

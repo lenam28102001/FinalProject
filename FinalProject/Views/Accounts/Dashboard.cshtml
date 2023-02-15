@@ -83,6 +83,7 @@
                                                         </td>
                                                     </tr>
                                                 }
+
                                             </tbody>
                                         </table>
                                         <br />
@@ -90,7 +91,7 @@
                                         <br />
                                         <br />
                                         <hr />
-                                        <div id="records_table">
+                                        <div id="records_table_oder">
                                         </div>
                                     </div>
                                 }
@@ -120,7 +121,7 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="account-details" role="tabpanel" aria-labelledby="account-details-tab">
-                               @await Html.PartialAsync("_ChangePasswordPartialView", changePassword)
+                            @await Html.PartialAsync("_ChangePasswordPartialView", changePassword)
                         </div>
                     </div>
                 </div>
@@ -140,8 +141,8 @@
                 data: { id: madonhang },
                 async: true,
                 success: function (results) {
-                    $("#records_table").html("");
-                    $("#records_table").html(results);
+                    $("#records_table_oder").html("");
+                    $("#records_table_oder").html(results);
                 },
                 error: function (xhr) {
                     alert('error');
