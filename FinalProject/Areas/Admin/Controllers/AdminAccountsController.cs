@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FinalProject.Models;
+using FinalProject.Helpper;
+using FinalProject.Extension;
+using AspNetCoreHero.ToastNotification.Abstractions;
+using FinalProject.Areas.Admin.Models;
 
 namespace FinalProject.Areas.Admin.Controllers
 {
@@ -14,16 +18,18 @@ namespace FinalProject.Areas.Admin.Controllers
     {
         private readonly FinalProjectContext _context;
 
-        public AdminAccountsController(FinalProjectContext context)
+        public INotyfService _notyfService { get; }
+        public AdminAccountsController(FinalProjectContext context, INotyfService notyfService)
         {
             _context = context;
+            _notyfService = notyfService;
         }
 
         // GET: Admin/AdminAccounts
         public async Task<IActionResult> Index()
         {
 
-            ViewData["QuyenTruyCap"] = new SelectList(_context.Roles, "RoleId", "Description");
+            ViewData["QuyenTruyCap"] = new SelectList(_context.Roles, "RoleId", "RoleName");
             List<SelectListItem> lsTrangThai = new List<SelectListItem>();
             lsTrangThai.Add(new SelectListItem() { Text = "Active", Value = "1" });
             lsTrangThai.Add(new SelectListItem() { Text = "Block", Value = "0" });
@@ -55,7 +61,7 @@ namespace FinalProject.Areas.Admin.Controllers
         // GET: Admin/AdminAccounts/Create
         public IActionResult Create()
         {
-            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId");
+            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleName");
             return View();
         }
 
@@ -68,12 +74,47 @@ namespace FinalProject.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                string salt = Utilities.GetRandomKey();
+                account.Salt = salt;
+                account.Password = (account.Password + salt.Trim()).ToMD5();
+                //Password = (taikhoan.Password + salt.Trim()).ToMD5()
+                account.CreateDate = DateTime.Now;
                 _context.Add(account);
                 await _context.SaveChangesAsync();
+                _notyfService.Success("Đăng ký thành công");
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId", account.RoleId);
+            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleName", account.RoleId);
             return View(account);
+        }
+
+        public IActionResult ChangePassword()
+        {
+            ViewData["QuyenTruyCap"] = new SelectList(_context.Roles, "RoleId", "RoleName");
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult ChangePassword(ChangePasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var taikhoan = _context.Accounts.AsNoTracking().SingleOrDefault(x => x.Email == model.Email);
+                if (taikhoan == null) return RedirectToAction("Login", "Accounts");
+                var pass = (model.PasswordNow.Trim() + taikhoan.Salt.Trim()).ToMD5();
+                {
+                    string passnew = (model.Password.Trim() + taikhoan.Salt.Trim()).ToMD5();
+                    taikhoan.Password = passnew;
+                    taikhoan.LastLogin = DateTime.Now;
+                    _context.Update(taikhoan);
+                    _context.SaveChanges();
+                    _notyfService.Success("Đổi mật khẩu thành công");
+                    return RedirectToAction("Login", "Accounts", new { Area = "Admin" });
+                }
+            }
+
+
+            return View();
         }
 
         // GET: Admin/AdminAccounts/Edit/5
@@ -125,7 +166,7 @@ namespace FinalProject.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId", account.RoleId);
+            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleName", account.RoleId);
             return View(account);
         }
 

@@ -32,8 +32,8 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="inputPassword4">Quyền truy cập</label>
-                    <select class="form-control" asp-for="RoleId" asp-items="@ViewBag.QuyenTruyCap" required>
-                        <option value="0" disabled selected>Chọn quyền truy cập</option>
+                    <select class="form-control" asp-for="RoleId" asp-items="@ViewBag.RoleId" required>
+                        <option value="" disabled selected>Chọn quyền truy cập</option>
                     </select>
                 </div>
             </div>

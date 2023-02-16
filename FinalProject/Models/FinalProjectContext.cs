@@ -31,7 +31,7 @@ namespace FinalProject.Models
         public virtual DbSet<QuangCao> QuangCaos { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<Shipper> Shippers { get; set; }
-        public virtual DbSet<TransactStatus> TransactStatuses { get; set; }
+        public virtual DbSet<TransactStatus> TransactStatus { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

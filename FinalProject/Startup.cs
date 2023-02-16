@@ -32,6 +32,8 @@ namespace FinalProject
             var connectString = Configuration.GetConnectionString("FinalProjectConnectionString");
             services.AddDbContext<FinalProjectContext>(options => options.UseSqlServer(connectString));
 
+
+
             services.AddSingleton<HtmlEncoder>(HtmlEncoder.Create(allowedRanges: new[] { UnicodeRanges.All }));
             services.AddSession();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
