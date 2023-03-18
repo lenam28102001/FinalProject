@@ -46,7 +46,6 @@ namespace FinalProject
                     p.AccessDeniedPath = "/not-found.html";
                });
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
-
             services.AddNotyf(config =>
             {
                 config.DurationInSeconds = 3;

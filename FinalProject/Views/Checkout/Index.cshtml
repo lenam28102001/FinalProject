@@ -53,7 +53,7 @@
                                 <div class="col-md-12">
                                     <div class="checkout-form-list">
                                         <label>Họ và Tên</label>
-                                        <input  id="FullName" name="FullName" asp-for="FullName" placeholder="Họ và Tên" type="text">
+                                        <input id="FullName" name="FullName" asp-for="FullName" placeholder="Họ và Tên" type="text">
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -163,7 +163,10 @@
                                         </div>
                                     </div>
                                     <div class="xacnhandathang order-button-payment">
-                                        <input  value="XÁC NHẬN ĐẶT HÀNG" type="submit">
+                                        <a asp-action="PaypalCheckout">
+                                            <img src="~/images/pages/paypal_checkout.gif" height="100" />
+                                        </a>
+                                        <input value="XÁC NHẬN ĐẶT HÀNG" type="submit">
                                     </div>
                                 </div>
                             </div>
@@ -175,38 +178,38 @@
     </div>
 </main>
 @*@section Scripts{
-<script>
+    <script>
     $(function () {
-        $(".xacnhandathang").click(function () {
-         
-            var CustomerId = $("#CustomerId").val();
-            var FullName = $("#FullName").val();
-            var Phone = $("#Phone").val();
-            var Address = $("#Address").val();
-               //alert(CustomerId)
-               // alert(FullName)
-               // alert(Phone)
-               // alert(Address)
-            $.ajax({
-                url: "checkout.html",
-                type: "POST",
-                dataType: "JSON",
-                data: { 
-                    CustomerId: CustomerId,
-                    FullName: FullName,
-                    Phone:Phone,
-                    Adress: Adress
-                },
-                success: function (result) {
-                    if (result.success) {
-                        location.reload();
-                    }
-                },
-                error: function (rs) {
-                    alert("Remove Cart Error !")
-                }
-            });
-        });
+    $(".xacnhandathang").click(function () {
+
+    var CustomerId = $("#CustomerId").val();
+    var FullName = $("#FullName").val();
+    var Phone = $("#Phone").val();
+    var Address = $("#Address").val();
+    //alert(CustomerId)
+    // alert(FullName)
+    // alert(Phone)
+    // alert(Address)
+    $.ajax({
+    url: "checkout.html",
+    type: "POST",
+    dataType: "JSON",
+    data: {
+    CustomerId: CustomerId,
+    FullName: FullName,
+    Phone:Phone,
+    Adress: Adress
+    },
+    success: function (result) {
+    if (result.success) {
+    location.reload();
+    }
+    },
+    error: function (rs) {
+    alert("Remove Cart Error !")
+    }
     });
-</script>
-}*@
+    });
+    });
+    </script>
+    }*@

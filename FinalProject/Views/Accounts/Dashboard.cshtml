@@ -4,7 +4,6 @@
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
     List<Order> DanhSachDonHang = ViewBag.DonHang;
-    var total = DanhSachDonHang.Sum(x => x.Totalmoney).ToString("#,##0");
     FinalProject.ModelViews.ChangePasswordViewModel changePassword = new FinalProject.ModelViews.ChangePasswordViewModel();
 }
 

@@ -81,7 +81,6 @@ namespace FinalProject.Controllers
                     ViewBag.DonHang = lsDonHang;
                     return View(khachhang);
                 }
-
             }
             return RedirectToAction("Login");
         }

@@ -7,7 +7,7 @@ namespace FinalProject.Areas.Admin.Controllers
     public class HomeController : Controller
     {
         [Area("Admin")]
-        [Route("admin.html", Name = "AdminIndex")]
+        [Route("admin", Name = "AdminIndex")]
         [Authorize]
         public IActionResult Index()
         {

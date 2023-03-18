@@ -1,16 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AspNetCoreHero.ToastNotification.Abstractions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using BraintreeHttp;
 using FinalProject.Extension;
 using FinalProject.Helpper;
 using FinalProject.Models;
 using FinalProject.ModelViews;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using PayPal.Core;
+using PayPal.v1.Payments;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,10 +27,18 @@ namespace FinalProject.Controllers
     {
         private readonly FinalProjectContext _context;
         public INotyfService _notyfService { get; }
-        public CheckoutController(FinalProjectContext context, INotyfService notyfService)
+        private readonly string _clientId;
+        private readonly string _secretKey;
+
+        public double TyGiaUSD = 23300;
+        public CheckoutController(FinalProjectContext context, INotyfService notyfService, IConfiguration config)
         {
             _context = context;
             _notyfService = notyfService;
+            _clientId = config["PaypalSettings:ClientId"];
+            _secretKey = config["PaypalSettings:Secretkey"];
+
+
         }
         public List<CartItem> GioHang
         {
@@ -65,6 +80,10 @@ namespace FinalProject.Controllers
             //Lay ra gio hang de xu ly
             var cart = HttpContext.Session.Get<List<CartItem>>("GioHang");
             var taikhoanID = HttpContext.Session.GetString("CustomerId");
+            if (taikhoanID == null)
+            {
+               return RedirectToAction("dang-nhap.html");
+            }
             MuaHangVM model = new MuaHangVM();
             if (taikhoanID != null)
             {
@@ -74,10 +93,6 @@ namespace FinalProject.Controllers
                 model.Email = khachhang.Email;
                 model.Phone = khachhang.Phone;
                 model.Address = khachhang.Address;
-
-                //khachhang.LocationId = muaHang.TinhThanh;
-                //khachhang.District = muaHang.QuanHuyen;
-                //khachhang.Ward = muaHang.PhuongXa;
                 khachhang.Address = muaHang.Address;
                 _context.Update(khachhang);
                 _context.SaveChanges();
@@ -87,12 +102,9 @@ namespace FinalProject.Controllers
                 if (ModelState.IsValid)
                 {
                     //Khoi tao don hang
-                    Order donhang = new Order();
+                    var donhang = new Models.Order();
                     donhang.CustomerId = model.CustomerId;
                     donhang.Address = model.Address;
-                    //donhang.LocationId = model.TinhThanh;
-                    //donhang.District = model.QuanHuyen;
-                    //donhang.Ward = model.PhuongXa;
 
                     donhang.OrderDate = DateTime.Now;
                     donhang.TransactStatusId = 1;//Don hang moi
@@ -122,8 +134,6 @@ namespace FinalProject.Controllers
                     _notyfService.Success("Đơn hàng đặt thành công");
                     //cap nhat thong tin khach hang
                     return RedirectToAction("Success");
-
-
                 }
             }
             catch
@@ -135,6 +145,170 @@ namespace FinalProject.Controllers
             ViewData["lsTinhThanh"] = new SelectList(_context.Locations.Where(x => x.Levels == 1).OrderBy(x => x.Type).ToList(), "Location", "Name");
             ViewBag.GioHang = cart;
             return View(model);
+        }
+        [Route("paypal-checkout.html", Name = "Paypal")]
+        [Authorize]
+        public async System.Threading.Tasks.Task<IActionResult> PaypalCheckout()
+        {
+            var taikhoanID = HttpContext.Session.GetString("CustomerId");
+            if (string.IsNullOrEmpty(taikhoanID))
+            {
+                return RedirectToAction("Login", "Accounts", new { returnUrl = "/paypal-checkout.html" });
+            }
+            var environment = new SandboxEnvironment(_clientId, _secretKey);
+            var client = new PayPalHttpClient(environment);
+            #region Create Paypal Order
+            var itemList = new ItemList()
+            {
+                Items = new List<Item>()
+            };
+            var total = Math.Round(GioHang.Sum(p => p.TotalMoney) / TyGiaUSD, 2);
+            foreach (var item in GioHang)
+            {
+                itemList.Items.Add(new Item()
+                {
+                    Name = item.product.ProductName,
+                    Currency = "USD",
+                    Price = Math.Round(Convert.ToDouble(item.product.Price) / TyGiaUSD, 2).ToString(),
+                    Quantity = item.amount.ToString(),
+                    Sku = "sku",
+                    Tax = "0"
+                });
+            }
+            #endregion
+            var paypalOrderId = DateTime.Now.Ticks;
+            var hostname = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
+            var payment = new Payment()
+            {
+                Intent = "sale",
+                Transactions = new List<Transaction>()
+                {
+                    new Transaction()
+                    {
+                        Amount = new Amount()
+                        {
+                            Total = total.ToString(),
+                            Currency = "USD",
+                            Details = new AmountDetails
+                            {
+                                Tax = "0",
+                                Shipping = "0",
+                                Subtotal = total.ToString()
+                            }
+                        },
+                        Custom = "lenam-seller@gmail.com",
+                        ItemList = itemList,
+                        Description = $"Invoice #{paypalOrderId}",
+                        InvoiceNumber = paypalOrderId.ToString()
+                    }
+                },
+                RedirectUrls = new RedirectUrls()
+                {
+                    CancelUrl = $"{hostname}/Checkout/CheckoutFail",
+                    ReturnUrl = $"{hostname}/Checkout/CheckoutSuccess"
+                },
+                Payer = new Payer()
+                {
+                    PaymentMethod = "paypal"
+                }
+            };
+            PaymentCreateRequest request = new PaymentCreateRequest();
+            request.RequestBody(payment);
+
+            try
+            {
+                var response = await client.Execute(request);
+                var statusCode = response.StatusCode;
+                Payment result = response.Result<Payment>();
+
+                var links = result.Links.GetEnumerator();
+                string paypalRedirectUrl = null;
+                while (links.MoveNext())
+                {
+                    LinkDescriptionObject lnk = links.Current;
+                    if (lnk.Rel.ToLower().Trim().Equals("approval_url"))
+                    {
+                        //saving the payapalredirect URL to which user will be redirected for payment  
+                        paypalRedirectUrl = lnk.Href;
+                    }
+                }
+
+                return Redirect(paypalRedirectUrl);
+            }
+            catch (HttpException httpException)
+            {
+                var statusCode = httpException.StatusCode;
+                var debugId = httpException.Headers.GetValues("PayPal-Debug-Id").FirstOrDefault();
+
+                //Process when Checkout with Paypal fails
+                return Redirect("/Checkout/CheckoutFail");
+            }
+        }
+        public IActionResult CheckoutFail()
+        {
+            _notyfService.Success("Đặt hàng thất bại");
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult CheckoutSuccess()
+        {
+            var cart = HttpContext.Session.Get<List<CartItem>>("GioHang");
+            var taikhoanID = HttpContext.Session.GetString("CustomerId");
+            MuaHangVM model = new MuaHangVM();
+            if (taikhoanID != null)
+            {
+                var khachhang = _context.Customers.AsNoTracking().SingleOrDefault(x => x.CustomerId == Convert.ToInt32(taikhoanID));
+                model.CustomerId = khachhang.CustomerId;
+                model.FullName = khachhang.FullName;
+                model.Email = khachhang.Email;
+                model.Phone = khachhang.Phone;
+                model.Address = khachhang.Address;
+                _context.Update(khachhang);
+                _context.SaveChanges();
+            }
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    //Khoi tao don hang
+                    var donhang = new Models.Order();
+                    donhang.CustomerId = model.CustomerId;
+                    donhang.Address = model.Address;
+                    donhang.OrderDate = DateTime.Now;
+                    donhang.TransactStatusId = 2;
+                    donhang.Deleted = false;
+                    donhang.Paid = false;
+                    donhang.Note = Utilities.StripHTML(model.Note);
+                    donhang.Totalmoney = Convert.ToInt32(cart.Sum(x => x.TotalMoney));
+                    _context.Add(donhang);
+                    _context.SaveChanges();
+                    //tao danh sach don hang
+
+                    foreach (var item in cart)
+                    {
+                        OrderDetail orderDetail = new OrderDetail();
+                        orderDetail.OrderId = donhang.OrderId;
+                        orderDetail.ProductId = item.product.ProductId;
+                        orderDetail.Quantity = item.amount;
+                        orderDetail.Total = donhang.Totalmoney;
+                        orderDetail.Price = item.product.Price;
+                        orderDetail.CreateDate = DateTime.Now;
+                        _context.Add(orderDetail);
+                    }
+                    _context.SaveChanges();
+                    //clear gio hang
+                    HttpContext.Session.Remove("GioHang");
+                    //Xuat thong bao
+                    _notyfService.Success("Đơn hàng đặt thành công");
+                }
+                return RedirectToAction("Success");
+            }
+            catch
+            {
+                ViewData["lsTinhThanh"] = new SelectList(_context.Locations.Where(x => x.Levels == 1).OrderBy(x => x.Type).ToList(), "Location", "Name");
+                ViewBag.GioHang = cart;
+                return RedirectToAction("Index");
+            }
         }
         [Route("dat-hang-thanh-cong.html", Name = "Success")]
         public IActionResult Success()
@@ -156,8 +330,6 @@ namespace FinalProject.Controllers
                 successVM.DonHangID = donhang.OrderId;
                 successVM.Phone = khachhang.Phone;
                 successVM.Address = khachhang.Address;
-                //successVM.PhuongXa = GetNameLocation(donhang.Ward.Value);
-                //successVM.TinhThanh = GetNameLocation(donhang.District.Value);
                 return View(successVM);
             }
             catch
@@ -165,6 +337,7 @@ namespace FinalProject.Controllers
                 return View();
             }
         }
+
         public string GetNameLocation(int idlocation)
         {
             try
