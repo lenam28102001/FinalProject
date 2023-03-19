@@ -1,4 +1,5 @@
 using AspNetCoreHero.ToastNotification;
+using FinalProject.Email;
 using FinalProject.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -32,6 +33,10 @@ namespace FinalProject
             var connectString = Configuration.GetConnectionString("FinalProjectConnectionString");
             services.AddDbContext<FinalProjectContext>(options => options.UseSqlServer(connectString));
 
+            services.AddOptions();
+            var mailsettings = Configuration.GetSection("MailSettings");
+            services.Configure<MailSettings>(mailsettings);
+            services.AddTransient<ISendMailService, SendMailService>();
 
 
             services.AddSingleton<HtmlEncoder>(HtmlEncoder.Create(allowedRanges: new[] { UnicodeRanges.All }));

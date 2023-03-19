@@ -1,5 +1,6 @@
 ﻿using AspNetCoreHero.ToastNotification.Abstractions;
 using BraintreeHttp;
+using FinalProject.Email;
 using FinalProject.Extension;
 using FinalProject.Helpper;
 using FinalProject.Models;
@@ -26,19 +27,19 @@ namespace FinalProject.Controllers
     public class CheckoutController : Controller
     {
         private readonly FinalProjectContext _context;
+        private readonly ISendMailService _emailSender;
         public INotyfService _notyfService { get; }
         private readonly string _clientId;
         private readonly string _secretKey;
 
         public double TyGiaUSD = 23300;
-        public CheckoutController(FinalProjectContext context, INotyfService notyfService, IConfiguration config)
+        public CheckoutController(FinalProjectContext context, INotyfService notyfService, IConfiguration config, ISendMailService emailSender)
         {
             _context = context;
             _notyfService = notyfService;
             _clientId = config["PaypalSettings:ClientId"];
             _secretKey = config["PaypalSettings:Secretkey"];
-
-
+            _emailSender = emailSender;
         }
         public List<CartItem> GioHang
         {
@@ -80,9 +81,10 @@ namespace FinalProject.Controllers
             //Lay ra gio hang de xu ly
             var cart = HttpContext.Session.Get<List<CartItem>>("GioHang");
             var taikhoanID = HttpContext.Session.GetString("CustomerId");
+            var emailCustomer = _context.Customers.AsNoTracking().SingleOrDefault(x => x.CustomerId == Convert.ToInt32(taikhoanID));
             if (taikhoanID == null)
             {
-               return RedirectToAction("dang-nhap.html");
+                return RedirectToAction("Login","Accounts", new { returnUrl = "/checkout.html" });
             }
             MuaHangVM model = new MuaHangVM();
             if (taikhoanID != null)
@@ -127,11 +129,14 @@ namespace FinalProject.Controllers
                         orderDetail.CreateDate = DateTime.Now;
                         _context.Add(orderDetail);
                     }
+
                     _context.SaveChanges();
                     //clear gio hang
                     HttpContext.Session.Remove("GioHang");
                     //Xuat thong bao
                     _notyfService.Success("Đơn hàng đặt thành công");
+                    _emailSender.SendEmailAsync(emailCustomer.Email, "Notification!", $"<main class=\"main-content\">\r\n           <div class=\"container h-100\">\r\n            <div class=\"row h-100\">\r\n                <div class=\"col-lg-12\">\r\n                    <div class=\"breadcrumb-item\">\r\n                        <h2 class=\"breadcrumb-heading\">THÔNG TIN MUA HÀNG</h2>\r\n                                                             </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <div class=\"checkout-area section-space-y-axis-100\">\r\n        <div class=\"container\">\r\n            <form>\r\n                <div class=\"row\">\r\n                    <div class=\"col-lg-6 col-12\">\r\n\r\n                        <div class=\"checkbox-form\">\r\n                            <h3>Đặt hàng thành công</h3>\r\n                            <p>Mã đơn hàng: #{donhang.OrderId}</p>\r\n                            <p>Cảm ơn bạn đã đặt hàng</p>\r\n                            <br />\r\n                            <h3>THÔNG TIN ĐƠN HÀNG</h3>\r\n                            <p>Thông tin giao hàng</p>\r\n                            <p>Người nhận hàng: {donhang.Customer.FullName}</p>\r\n                            <p>Số điện thoại: {donhang.Customer.Phone}</p>\r\n                            <p>Địa chỉ: {donhang.Address}</p>\r\n                            <br />\r\n                            Để xem chi tiết đơn hàng vui lòng truy cập vào <a asp-controller=\"Accounts\" asp-action=\"Dashboard\"><strong>Tài khoản cá nhân.</strong></a> Cần hỗ trợ? Liên hệ với chúng tôi qua số điện thoại 0123456789\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"col-lg-6 col-12\">\r\n                                          </div>\r\n                </div>\r\n            </form>\r\n\r\n        </div>\r\n    </div>\r\n</main>");
+                    _emailSender.SendEmailAsync("namlgcd191254@fpt.edu.vn", "Notification!", $"You have a new order!");
                     //cap nhat thong tin khach hang
                     return RedirectToAction("Success");
                 }
@@ -295,11 +300,16 @@ namespace FinalProject.Controllers
                         orderDetail.CreateDate = DateTime.Now;
                         _context.Add(orderDetail);
                     }
+                    var emailCustomer = _context.Customers.AsNoTracking().SingleOrDefault(x => x.CustomerId == Convert.ToInt32(taikhoanID));
+
                     _context.SaveChanges();
                     //clear gio hang
                     HttpContext.Session.Remove("GioHang");
                     //Xuat thong bao
                     _notyfService.Success("Đơn hàng đặt thành công");
+                    _emailSender.SendEmailAsync(emailCustomer.Email, "Notification!", $"<main class=\"main-content\">\r\n           <div class=\"container h-100\">\r\n            <div class=\"row h-100\">\r\n                <div class=\"col-lg-12\">\r\n                    <div class=\"breadcrumb-item\">\r\n                        <h2 class=\"breadcrumb-heading\">THÔNG TIN MUA HÀNG</h2>\r\n                                                             </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <div class=\"checkout-area section-space-y-axis-100\">\r\n        <div class=\"container\">\r\n            <form>\r\n                <div class=\"row\">\r\n                    <div class=\"col-lg-6 col-12\">\r\n\r\n                        <div class=\"checkbox-form\">\r\n                            <h3>Đặt hàng thành công</h3>\r\n                            <p>Mã đơn hàng: #{donhang.OrderId}</p>\r\n                            <p>Cảm ơn bạn đã đặt hàng</p>\r\n                            <br />\r\n                            <h3>THÔNG TIN ĐƠN HÀNG</h3>\r\n                            <p>Thông tin giao hàng</p>\r\n                            <p>Người nhận hàng: {donhang.Customer.FullName}</p>\r\n                            <p>Số điện thoại: {donhang.Customer.Phone}</p>\r\n                            <p>Địa chỉ: {donhang.Address}</p>\r\n                            <br />\r\n                            Để xem chi tiết đơn hàng vui lòng truy cập vào <a asp-controller=\"Accounts\" asp-action=\"Dashboard\"><strong>Tài khoản cá nhân.</strong></a> Cần hỗ trợ? Liên hệ với chúng tôi qua số điện thoại 0123456789\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"col-lg-6 col-12\">\r\n                                          </div>\r\n                </div>\r\n            </form>\r\n\r\n        </div>\r\n    </div>\r\n</main>");
+                    _emailSender.SendEmailAsync("namlgcd191254@fpt.edu.vn", "Notification!", $"You have a new order!");
+                    //cap nhat thong tin khach hang
                 }
                 return RedirectToAction("Success");
             }
