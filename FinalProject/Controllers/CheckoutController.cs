@@ -201,7 +201,22 @@ namespace FinalProject.Controllers
                                 Subtotal = total.ToString()
                             }
                         },
-                        Custom = "lenam-seller@gmail.com",
+                        Payee = new Payee()
+                        {
+                            Email = "lenam-seller@gmail.com",
+                            MerchantId = "75RNCVGXGHAFE",
+                            PayeeDisplayMetadata = new PayeeDisplayMetadata
+                            {
+                                BrandName ="Test Store",
+                                Email = "lenam-seller@gmail.com",
+                                DisplayPhone = new DisplayPhone
+                                {
+                                    CountryCode = "95131",
+                                    Number ="4088992369"
+                                }
+                            }
+
+                        },
                         ItemList = itemList,
                         Description = $"Invoice #{paypalOrderId}",
                         InvoiceNumber = paypalOrderId.ToString()
