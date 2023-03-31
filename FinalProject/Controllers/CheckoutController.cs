@@ -16,8 +16,6 @@ using PayPal.v1.Payments;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-
 
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -205,17 +203,6 @@ namespace FinalProject.Controllers
                         {
                             Email = "lenam-seller@gmail.com",
                             MerchantId = "75RNCVGXGHAFE",
-                            PayeeDisplayMetadata = new PayeeDisplayMetadata
-                            {
-                                BrandName ="Test Store",
-                                Email = "lenam-seller@gmail.com",
-                                DisplayPhone = new DisplayPhone
-                                {
-                                    CountryCode = "95131",
-                                    Number ="4088992369"
-                                }
-                            }
-
                         },
                         ItemList = itemList,
                         Description = $"Invoice #{paypalOrderId}",
@@ -250,16 +237,16 @@ namespace FinalProject.Controllers
                     {
                         //saving the payapalredirect URL to which user will be redirected for payment  
                         paypalRedirectUrl = lnk.Href;
+                        
                     }
                 }
-
+               
                 return Redirect(paypalRedirectUrl);
             }
             catch (HttpException httpException)
             {
                 var statusCode = httpException.StatusCode;
                 var debugId = httpException.Headers.GetValues("PayPal-Debug-Id").FirstOrDefault();
-
                 //Process when Checkout with Paypal fails
                 return Redirect("/Checkout/CheckoutFail");
             }
@@ -326,7 +313,18 @@ namespace FinalProject.Controllers
                     _emailSender.SendEmailAsync("namlgcd191254@fpt.edu.vn", "Notification!", $"You have a new order!");
                     //cap nhat thong tin khach hang
                 }
-                return RedirectToAction("Success");
+                var khachhang = _context.Customers.AsNoTracking().SingleOrDefault(x => x.CustomerId == Convert.ToInt32(taikhoanID));
+                var dataOrder = _context.Orders
+                    .Where(x => x.CustomerId == Convert.ToInt32(taikhoanID))
+                    .OrderByDescending(x => x.OrderDate)
+                    .FirstOrDefault();
+                MuaHangSuccessVM successVM = new MuaHangSuccessVM();
+                successVM.FullName = khachhang.FullName;
+                successVM.DonHangID = dataOrder.OrderId;
+                successVM.Phone = khachhang.Phone;
+                successVM.Address = khachhang.Address;
+
+                return View(successVM);
             }
             catch
             {
@@ -335,7 +333,7 @@ namespace FinalProject.Controllers
                 return RedirectToAction("Index");
             }
         }
-        [Route("dat-hang-thanh-cong.html", Name = "Success")]
+        //[Route("dat-hang-thanh-cong.html", Name = "Success")]
         public IActionResult Success()
         {
             try

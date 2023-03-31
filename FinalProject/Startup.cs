@@ -1,4 +1,5 @@
 using AspNetCoreHero.ToastNotification;
+using FinalProject.Areas.Admin.Controllers;
 using FinalProject.Email;
 using FinalProject.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -37,7 +38,6 @@ namespace FinalProject
             var mailsettings = Configuration.GetSection("MailSettings");
             services.Configure<MailSettings>(mailsettings);
             services.AddTransient<ISendMailService, SendMailService>();
-
 
             services.AddSingleton<HtmlEncoder>(HtmlEncoder.Create(allowedRanges: new[] { UnicodeRanges.All }));
             services.AddSession();
@@ -80,6 +80,7 @@ namespace FinalProject
             app.UseAuthentication();
             app.UseAuthorization();
 
+            
 
             app.UseEndpoints(endpoints =>
             {

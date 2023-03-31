@@ -9,6 +9,7 @@ namespace FinalProject.Models
     {
         public Customer()
         {
+            Messages = new HashSet<Message>();
             Orders = new HashSet<Order>();
         }
 
@@ -28,6 +29,7 @@ namespace FinalProject.Models
         public DateTime? LastLogin { get; set; }
         public bool Active { get; set; }
 
+        public virtual ICollection<Message> Messages { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
     }
 }

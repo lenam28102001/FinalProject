@@ -23,6 +23,7 @@ namespace FinalProject.Models
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<Customer> Customers { get; set; }
         public virtual DbSet<Location> Locations { get; set; }
+        public virtual DbSet<Message> Messages { get; set; }
         public virtual DbSet<News> News { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<OrderDetail> OrderDetails { get; set; }
@@ -31,14 +32,14 @@ namespace FinalProject.Models
         public virtual DbSet<QuangCao> QuangCaos { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<Shipper> Shippers { get; set; }
-        public virtual DbSet<TransactStatus> TransactStatus { get; set; }
+        public virtual DbSet<TransactStatus> TransactStatuses { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=FYProject;Trusted_Connection=True;MultipleActiveResultSets=true");
+                optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=FYProject;Trusted_Connection=True;MultipleActiveResultSets=true;User ID=nam;Password=123");
             }
         }
 
@@ -167,6 +168,23 @@ namespace FinalProject.Models
                 entity.Property(e => e.Slug).HasMaxLength(100);
 
                 entity.Property(e => e.Type).HasMaxLength(20);
+            });
+
+            modelBuilder.Entity<Message>(entity =>
+            {
+                entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
+
+                entity.Property(e => e.DateTime).HasColumnType("datetime");
+
+                entity.Property(e => e.Text).IsRequired();
+
+                entity.Property(e => e.UserName).IsRequired();
+
+                entity.HasOne(d => d.Customer)
+                    .WithMany(p => p.Messages)
+                    .HasForeignKey(d => d.CustomerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Messages_Customers");
             });
 
             modelBuilder.Entity<News>(entity =>
