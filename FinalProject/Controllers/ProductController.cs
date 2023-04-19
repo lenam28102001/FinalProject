@@ -1,7 +1,10 @@
-﻿using FinalProject.Models;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using FinalProject.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PagedList.Core;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace FinalProject.Controllers
@@ -15,24 +18,46 @@ namespace FinalProject.Controllers
         }
 
         [Route("shop.html", Name = ("ShopProduct"))]
-        public IActionResult Index(int? page)
+        public IActionResult Index(int? page, int CatID = 0)
         {
             try
             {
                 var pageNumber = page == null || page <= 0 ? 1 : page.Value;
                 var pageSize = 10;
-                var lsTinDangs = _context.Products
-                    .AsNoTracking()
-                    .OrderBy(x => x.DateCreated);
-                PagedList<Product> models = new PagedList<Product>(lsTinDangs, pageNumber, pageSize);
 
+                var lsProducts = _context.Products
+                     .AsNoTracking()
+                     .Include(x => x.Cat)
+                     .OrderBy(x => x.ProductId);
+                if (CatID != 0)
+                {
+                     lsProducts = _context.Products
+                    .AsNoTracking()
+                    .Where(x => x.CatId == CatID)
+                    .Include(x => x.Cat)
+                    .OrderBy(x => x.ProductId);
+                }
+               
+                PagedList<Product> models = new PagedList<Product>(lsProducts, pageNumber, pageSize);
+                var lsReview = _context.Reviews.AsNoTracking().Include(x => x.Customer).Include(x => x.Product).OrderByDescending(x => x.DateTime).ToList();
+                ViewBag.Review = lsReview;
                 ViewBag.CurrentPage = pageNumber;
+                ViewData["DanhMuc"] = new SelectList(_context.Categories, "CatId", "CatName");
                 return View(models);
             }
             catch
             {
                 return RedirectToAction("Index", "Home");
             }
+        }
+        public IActionResult Filtter(int CatID = 0)
+        {
+            var url = $"/shop.html?CatID={CatID}";
+            if (CatID == 0)
+            {
+                url = $"/shop.html";
+            }
+            return Json(new { status = "success", redirectUrl = url });
         }
         [Route("danhmuc/{Alias}", Name = ("ListProduct"))]
         public IActionResult List(string Alias, int page = 1)
@@ -47,6 +72,8 @@ namespace FinalProject.Controllers
                     .Where(x => x.CatId == danhmuc.CatId)
                     .OrderByDescending(x => x.DateCreated);
                 PagedList<Product> models = new PagedList<Product>(lsTinDangs, page, pageSize);
+                var lsReview = _context.Reviews.AsNoTracking().Include(x => x.Customer).Include(x => x.Product).OrderByDescending(x => x.DateTime).ToList();
+                ViewBag.Review = lsReview;
                 ViewBag.CurrentPage = page;
                 ViewBag.CurrentCat = danhmuc;
                 return View(models);
@@ -67,6 +94,7 @@ namespace FinalProject.Controllers
                 {
                     return RedirectToAction("Index");
                 }
+                var lsReview = _context.Reviews.AsNoTracking().Include(x => x.Customer).Include(x => x.Product).Where(x => x.ProductId == id).OrderByDescending(x => x.DateTime).ToList();
                 var lsProduct = _context.Products
                     .AsNoTracking()
                     .Where(x => x.CatId == product.CatId && x.ProductId != id && x.Active == true)
@@ -74,6 +102,7 @@ namespace FinalProject.Controllers
                     .OrderByDescending(x => x.DateCreated)
                     .ToList();
                 ViewBag.SanPham = lsProduct;
+                ViewBag.Review = lsReview;
                 return View(product);
             }
             catch

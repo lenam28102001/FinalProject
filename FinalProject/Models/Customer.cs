@@ -11,6 +11,7 @@ namespace FinalProject.Models
         {
             Messages = new HashSet<Message>();
             Orders = new HashSet<Order>();
+            Reviews = new HashSet<Review>();
         }
 
         public int CustomerId { get; set; }
@@ -31,5 +32,6 @@ namespace FinalProject.Models
 
         public virtual ICollection<Message> Messages { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
+        public virtual ICollection<Review> Reviews { get; set; }
     }
 }

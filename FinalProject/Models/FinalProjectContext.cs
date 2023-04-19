@@ -30,6 +30,7 @@ namespace FinalProject.Models
         public virtual DbSet<Page> Pages { get; set; }
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<QuangCao> QuangCaos { get; set; }
+        public virtual DbSet<Review> Reviews { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<Shipper> Shippers { get; set; }
         public virtual DbSet<TransactStatus> TransactStatuses { get; set; }
@@ -39,7 +40,7 @@ namespace FinalProject.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=FYProject;Trusted_Connection=True;MultipleActiveResultSets=true;User ID=nam;Password=123");
+                optionsBuilder.UseSqlServer("Server=.;Database=FYProject;User Id=sa; Password=123;Integrated Security= false;");
             }
         }
 
@@ -49,6 +50,8 @@ namespace FinalProject.Models
 
             modelBuilder.Entity<Account>(entity =>
             {
+                entity.HasIndex(e => e.RoleId, "IX_Accounts_RoleID");
+
                 entity.Property(e => e.AccountId).HasColumnName("AccountID");
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
@@ -79,6 +82,10 @@ namespace FinalProject.Models
 
             modelBuilder.Entity<AttribustesPrice>(entity =>
             {
+                entity.HasIndex(e => e.AttributeId, "IX_AttribustesPrices_AttributeID");
+
+                entity.HasIndex(e => e.ProductId, "IX_AttribustesPrices_ProductID");
+
                 entity.Property(e => e.AttribustesPriceId).HasColumnName("AttribustesPriceID");
 
                 entity.Property(e => e.AttributeId).HasColumnName("AttributeID");
@@ -172,6 +179,8 @@ namespace FinalProject.Models
 
             modelBuilder.Entity<Message>(entity =>
             {
+                entity.HasIndex(e => e.CustomerId, "IX_Messages_CustomerID");
+
                 entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
 
                 entity.Property(e => e.DateTime).HasColumnType("datetime");
@@ -190,6 +199,8 @@ namespace FinalProject.Models
             modelBuilder.Entity<News>(entity =>
             {
                 entity.HasKey(e => e.PostId);
+
+                entity.HasIndex(e => e.CatId, "IX_News_CatID");
 
                 entity.Property(e => e.PostId).HasColumnName("PostID");
 
@@ -227,6 +238,10 @@ namespace FinalProject.Models
 
             modelBuilder.Entity<Order>(entity =>
             {
+                entity.HasIndex(e => e.CustomerId, "IX_Orders_CustomerID");
+
+                entity.HasIndex(e => e.TransactStatusId, "IX_Orders_TransactStatusID");
+
                 entity.Property(e => e.OrderId).HasColumnName("OrderID");
 
                 entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
@@ -254,6 +269,10 @@ namespace FinalProject.Models
 
             modelBuilder.Entity<OrderDetail>(entity =>
             {
+                entity.HasIndex(e => e.OrderId, "IX_OrderDetails_OrderID");
+
+                entity.HasIndex(e => e.ProductId, "IX_OrderDetails_ProductID");
+
                 entity.Property(e => e.OrderDetailId).HasColumnName("OrderDetailID");
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
@@ -296,6 +315,8 @@ namespace FinalProject.Models
 
             modelBuilder.Entity<Product>(entity =>
             {
+                entity.HasIndex(e => e.CatId, "IX_Products_CatID");
+
                 entity.Property(e => e.ProductId).HasColumnName("ProductID");
 
                 entity.Property(e => e.Alias).HasMaxLength(255);
@@ -341,6 +362,27 @@ namespace FinalProject.Models
                 entity.Property(e => e.Title).HasMaxLength(255);
 
                 entity.Property(e => e.UrlLink).HasMaxLength(255);
+            });
+
+            modelBuilder.Entity<Review>(entity =>
+            {
+                entity.Property(e => e.ReviewId).HasColumnName("ReviewID");
+
+                entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
+
+                entity.Property(e => e.DateTime).HasColumnType("datetime");
+
+                entity.Property(e => e.ProductId).HasColumnName("ProductID");
+
+                entity.HasOne(d => d.Customer)
+                    .WithMany(p => p.Reviews)
+                    .HasForeignKey(d => d.CustomerId)
+                    .HasConstraintName("FK_Reviews_Customers");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.Reviews)
+                    .HasForeignKey(d => d.ProductId)
+                    .HasConstraintName("FK_Reviews_Products");
             });
 
             modelBuilder.Entity<Role>(entity =>

@@ -7,8 +7,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     int PageCurrent = ViewBag.CurrentPage;
     int PageNext = PageCurrent + 1;
+    List<Review> lsReview = ViewBag.Review;
 }
- 
+
 <main class="main-content">
     <div class="breadcrumb-area breadcrumb-height" data-bg-image="/assets/images/banner/2-1-1920x523.jpg">
         <div class="container h-100">
@@ -290,50 +291,51 @@
                                     foreach (var item in Model)
                                     {
                                         string url = $"/{item.Alias}-{item.ProductId}.html";
-                    <div class="col-lg-4 col-sm-6">
-                        <div class="product-item">
-                            <div class="product-img img-zoom-effect">
-                                <a href="@url">
-                                    <img class="img-full" src="~/images/products/@item.Thumb" alt="@item.Title">
-                                </a>
-                                <div class="product-add-action">
-                                    <ul>
-                                        <li>
-                                            <a href="cart.html">
-                                                <i class="pe-7s-cart"></i>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="compare.html">
-                                                <i class="pe-7s-shuffle"></i>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="wishlist.html">
-                                                <i class="pe-7s-like"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="product-content">
-                                <a class="product-name" href="@url">@item.ProductName</a>
-                                <div class="price-box pb-1">
-                                    <span class="new-price">@item.Price.Value.ToString("#,##0") VNĐ</span>
-                                </div>
-                                <div class="rating-box">
-                                    <ul>
-                                        <li><i class="pe-7s-star"></i></li>
-                                        <li><i class="pe-7s-star"></i></li>
-                                        <li><i class="pe-7s-star"></i></li>
-                                        <li><i class="pe-7s-star"></i></li>
-                                        <li><i class="pe-7s-star"></i></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>}
-            }
+                                        <div class="col-lg-4 col-sm-6">
+                                            <div class="product-item">
+                                                <div class="product-img img-zoom-effect">
+                                                    <a href="@url">
+                                                        <img class="img-full" src="~/images/products/@item.Thumb" alt="@item.Title">
+                                                    </a>
+                                                    <div class="product-add-action">
+                                                        <ul>
+                                                            <li>
+                                                                <a href="cart.html">
+                                                                    <i class="pe-7s-cart"></i>
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a href="compare.html">
+                                                                    <i class="pe-7s-shuffle"></i>
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a href="wishlist.html">
+                                                                    <i class="pe-7s-like"></i>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="product-content">
+                                                    <a class="product-name" href="@url">@item.ProductName</a>
+                                                    <div class="price-box pb-1">
+                                                        <span class="new-price">@item.Price.Value.ToString("#,##0") VNĐ</span>
+                                                    </div>
+                                                    <div class="rating-box">
+                                                        <ul>
+                                                            <li><i class="pe-7s-star"></i></li>
+                                                            <li><i class="pe-7s-star"></i></li>
+                                                            <li><i class="pe-7s-star"></i></li>
+                                                            <li><i class="pe-7s-star"></i></li>
+                                                            <li><i class="pe-7s-star"></i></li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
 
                             </div>
                         </div>
@@ -344,51 +346,73 @@
                                     foreach (var item in Model)
                                     {
                                         string url = $"/{item.Alias}-{item.ProductId}.html";
-                    <div class="col-12 pt-6">
-                        <div class="product-item">
-                            <div class="product-img img-zoom-effect">
-                                <a href="@url">
-                                    <img class="img-full" src="~/images/products/@item.Thumb" alt="@item.Title">
-                                </a>
-                                <div class="product-add-action">
-                                    <ul>
-                                        <li>
-                                            <a href="cart.html">
-                                                <i class="pe-7s-cart"></i>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="compare.html">
-                                                <i class="pe-7s-shuffle"></i>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="wishlist.html">
-                                                <i class="pe-7s-like"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="product-content align-self-center">
-                                <a class="product-name pb-2" href="@url">@item.ProductName</a>
-                                <div class="price-box pb-1">
-                                    <span class="new-price">@item.Price</span>
-                                </div>
-                                <div class="rating-box pb-2">
-                                    <ul>
-                                        <li><i class="pe-7s-star"></i></li>
-                                        <li><i class="pe-7s-star"></i></li>
-                                        <li><i class="pe-7s-star"></i></li>
-                                        <li><i class="pe-7s-star"></i></li>
-                                        <li><i class="pe-7s-star"></i></li>
-                                    </ul>
-                                </div>
-                                <p class="short-desc mb-0">@item.ShortDesc</p>
-                            </div>
-                        </div>
-                    </div>}
-            }
+                                        <div class="col-12 pt-6">
+                                            <div class="product-item">
+                                                <div class="product-img img-zoom-effect">
+                                                    <a href="@url">
+                                                        <img class="img-full" src="~/images/products/@item.Thumb" alt="@item.Title">
+                                                    </a>
+                                                    <div class="product-add-action">
+                                                        <ul>
+                                                            <li>
+                                                                <a href="cart.html">
+                                                                    <i class="pe-7s-cart"></i>
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a href="compare.html">
+                                                                    <i class="pe-7s-shuffle"></i>
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a href="wishlist.html">
+                                                                    <i class="pe-7s-like"></i>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="product-content align-self-center">
+                                                    <a class="product-name pb-2" href="@url">@item.ProductName</a>
+                                                    <div class="price-box pb-1">
+                                                        <span class="new-price">@item.Price</span>
+                                                    </div>
+                                                    <div class="rating-box pb-2">
+                                                        <ul>
+                                                            @if (lsReview != null && lsReview.Count(x => x.ProductId == item.ProductId) > 0)
+                                                            {
+                                                                int sum = 0;
+                                                                foreach (var review in lsReview.Where(x => x.ProductId == item.ProductId))
+                                                                {
+                                                                    sum += Convert.ToInt32(review.Rating);
+                                                                }
+                                                                var tbc = sum / lsReview.Count(x => x.ProductId == item.ProductId);
+                                                                var defaultStar = 5 - tbc;
+                                                                @for (int i = 1; i <= tbc; i++)
+                                                                {
+                                                                    <li><i class="fas fa-star"></i></li>
+                                                                }
+                                                                @for (int i = 1; i <= defaultStar; i++)
+                                                                {
+                                                                    <li><i class="far fa-star"></i></li>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <li><i class="far fa-star"></i></li>
+                                                                <li><i class="far fa-star"></i></li>
+                                                                <li><i class="far fa-star"></i></li>
+                                                                <li><i class="far fa-star"></i></li>
+                                                                <li><i class="far fa-star"></i></li>
+                                                            }
+                                                        </ul>
+                                                    </div>
+                                                    <p class="short-desc mb-0">@item.ShortDesc</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
 
                             </div>
                         </div>
@@ -398,7 +422,7 @@
                             <pager class="pager-container" list="@Model" options="@PagedListRenderOptions.Bootstrap4PageNumbersOnly" asp-area="" asp-controller="Product" asp-route-Alias="@category.Alias" asp-action="List" />
                         </ul>
                     </div>
-                    
+
                 </div>
             </div>
         </div>

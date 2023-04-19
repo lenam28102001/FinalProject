@@ -11,6 +11,7 @@ namespace FinalProject.Models
         {
             AttribustesPrices = new HashSet<AttribustesPrice>();
             OrderDetails = new HashSet<OrderDetail>();
+            Reviews = new HashSet<Review>();
         }
 
         public int ProductId { get; set; }
@@ -37,5 +38,6 @@ namespace FinalProject.Models
         public virtual Category Cat { get; set; }
         public virtual ICollection<AttribustesPrice> AttribustesPrices { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
+        public virtual ICollection<Review> Reviews { get; set; }
     }
 }

@@ -5,6 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     int PageCurrent = ViewBag.CurrentPage;
     int PageNext = PageCurrent + 1;
+    List<Review> lsReview = ViewBag.Review;
 }
 <!-- Begin Main Content Area -->
 <main class="main-content">
@@ -269,13 +270,9 @@
                                 <span>23</span> Product Found of <span>50</span>
                             </li>
                             <li class="short">
-                                <select class="nice-select wide rounded-0">
-                                    <option value="1">Sort by Default</option>
-                                    <option value="2">Sort by Popularity</option>
-                                    <option value="3">Sort by Rated</option>
-                                    <option value="4">Sort by Latest</option>
-                                    <option value="5">Sort by High Price</option>
-                                    <option value="6">Sort by Low Price</option>
+                                <select class="nice-select wide rounded-0" id="txtCatID" name="txtCatID" asp-items="ViewBag.DanhMuc">
+                                    <option selected>Chọn danh mục</option>
+                                    <option value="0">Chọn tất cả</option>
                                 </select>
                             </li>
                         </ul>
@@ -310,11 +307,32 @@
                                                     </div>
                                                     <div class="rating-box">
                                                         <ul>
-                                                            <li><i class="pe-7s-star"></i></li>
-                                                            <li><i class="pe-7s-star"></i></li>
-                                                            <li><i class="pe-7s-star"></i></li>
-                                                            <li><i class="pe-7s-star"></i></li>
-                                                            <li><i class="pe-7s-star"></i></li>
+                                                            @if (lsReview != null && lsReview.Count(x => x.ProductId == item.ProductId) > 0)
+                                                            {
+                                                                int sum = 0;
+                                                                foreach (var review in lsReview.Where(x=>x.ProductId == item.ProductId))
+                                                                {
+                                                                    sum += Convert.ToInt32(review.Rating);
+                                                                }
+                                                                var tbc = sum / lsReview.Count(x => x.ProductId == item.ProductId);
+                                                                var defaultStar = 5 - tbc;
+                                                                @for (int i = 1; i <= tbc; i++)
+                                                                {
+                                                                    <li><i class="fas fa-star"></i></li>
+                                                                }
+                                                                @for (int i = 1; i <= defaultStar; i++)
+                                                                {
+                                                                    <li><i class="far fa-star"></i></li>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <li><i class="far fa-star"></i></li>
+                                                                <li><i class="far fa-star"></i></li>
+                                                                <li><i class="far fa-star"></i></li>
+                                                                <li><i class="far fa-star"></i></li>
+                                                                <li><i class="far fa-star"></i></li>
+                                                            }
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -355,11 +373,32 @@
                                                     </div>
                                                     <div class="rating-box pb-2">
                                                         <ul>
-                                                            <li><i class="pe-7s-star"></i></li>
-                                                            <li><i class="pe-7s-star"></i></li>
-                                                            <li><i class="pe-7s-star"></i></li>
-                                                            <li><i class="pe-7s-star"></i></li>
-                                                            <li><i class="pe-7s-star"></i></li>
+                                                            @if (lsReview != null && lsReview.Count(x => x.ProductId == item.ProductId) > 0)
+                                                            {
+                                                                int sum = 0;
+                                                                foreach (var review in lsReview.Where(x => x.ProductId == item.ProductId))
+                                                                {
+                                                                    sum += Convert.ToInt32(review.Rating);
+                                                                }
+                                                                var tbc = sum / lsReview.Count(x => x.ProductId == item.ProductId);
+                                                                var defaultStar = 5 - tbc;
+                                                                @for (int i = 1; i <= tbc; i++)
+                                                                {
+                                                                    <li><i class="fas fa-star"></i></li>
+                                                                }
+                                                                @for (int i = 1; i <= defaultStar; i++)
+                                                                {
+                                                                    <li><i class="far fa-star"></i></li>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <li><i class="far fa-star"></i></li>
+                                                                <li><i class="far fa-star"></i></li>
+                                                                <li><i class="far fa-star"></i></li>
+                                                                <li><i class="far fa-star"></i></li>
+                                                                <li><i class="far fa-star"></i></li>
+                                                            }
                                                         </ul>
                                                     </div>
                                                     <p class="short-desc mb-0">@item.ShortDesc</p>
@@ -382,3 +421,34 @@
     </div>
 </main>
 <!-- Main Content Area End Here -->
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            jQuery("#txtCatID").change(function () {
+                var catID = jQuery(this).children(":selected").attr("value");
+                catID = parseFloat(catID);
+                $('#txtCatID option')
+                    .removeAttr('selected');
+                $("#txtCatID > [value=" + catID + "]").attr("selected", "true");
+                $.ajax({
+                    url: '/Product/Filtter',
+                    datatype: "json",
+                    type: "GET",
+                    data: {
+                        CatID: catID
+                    },
+                    async: true,
+                    success: function (results) {
+                        if (results.status == "success") {
+                            window.location.href = results.redirectUrl;
+                        }
+                    },
+                    error: function (xhr) {
+                        alert('error');
+                    }
+                });
+            });
+        });
+    </script>
+
+}
