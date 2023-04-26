@@ -69,6 +69,7 @@ namespace FinalProject.Controllers
 
                 var lsTinDangs = _context.Products
                     .AsNoTracking()
+                    .Include(x=>x.Cat)
                     .Where(x => x.CatId == danhmuc.CatId)
                     .OrderByDescending(x => x.DateCreated);
                 PagedList<Product> models = new PagedList<Product>(lsTinDangs, page, pageSize);

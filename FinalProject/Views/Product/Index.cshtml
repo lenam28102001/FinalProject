@@ -310,7 +310,7 @@
                                                             @if (lsReview != null && lsReview.Count(x => x.ProductId == item.ProductId) > 0)
                                                             {
                                                                 int sum = 0;
-                                                                foreach (var review in lsReview.Where(x=>x.ProductId == item.ProductId))
+                                                                foreach (var review in lsReview.Where(x => x.ProductId == item.ProductId))
                                                                 {
                                                                     sum += Convert.ToInt32(review.Rating);
                                                                 }
@@ -401,7 +401,7 @@
                                                             }
                                                         </ul>
                                                     </div>
-                                                    <p class="short-desc mb-0">@item.ShortDesc</p>
+                                                    <p class="short-desc mb-0">@item.Cat.CatName</p>
                                                 </div>
                                             </div>
                                         </div>

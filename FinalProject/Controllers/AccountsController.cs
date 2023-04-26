@@ -73,7 +73,7 @@ namespace FinalProject.Controllers
                 {
                     var lsDonHang = _context.Orders
                         .Include(x => x.TransactStatus)
-                        .Include(x=> x.OrderDetails)
+                        .Include(x => x.OrderDetails)
                         .AsNoTracking()
                         .Where(x => x.CustomerId == khachhang.CustomerId)
                         .OrderByDescending(x => x.OrderDate)
@@ -104,6 +104,7 @@ namespace FinalProject.Controllers
                     string salt = Utilities.GetRandomKey();
                     Customer khachhang = new Customer
                     {
+                        Address = taikhoan.Address,
                         FullName = taikhoan.FullName,
                         Phone = taikhoan.Phone.Trim().ToLower(),
                         Email = taikhoan.Email.Trim().ToLower(),
@@ -224,7 +225,47 @@ namespace FinalProject.Controllers
             HttpContext.Session.Remove("CustomerId");
             return RedirectToAction("Index", "Home");
         }
+        [HttpPost]
+        public IActionResult EditProfile(EditProfileViewModel model)
+        {
+            try
+            {
+                var taikhoanID = HttpContext.Session.GetString("CustomerId");
+                if (taikhoanID == null)
+                {
+                    return RedirectToAction("Login", "Accounts");
+                }
+                if (ModelState.IsValid)
+                {
+                    var taikhoan = _context.Customers.Find(Convert.ToInt32(taikhoanID));
+                    if (taikhoan == null) { return RedirectToAction("Login", "Accounts"); }
+                    else
+                    {
+                        var cusProfile = _context.Customers.AsNoTracking().SingleOrDefault(x => x.CustomerId == Convert.ToInt32(taikhoanID));
+                        model.FullName = cusProfile.FullName;
+                        model.Email = cusProfile.Email;
+                        model.Phone = cusProfile.Phone;
+                        model.Address = cusProfile.Address;
+                    }
+                    taikhoan.FullName = model.FullName;
+                    taikhoan.Email = model.Email;
+                    taikhoan.Phone = model.Phone;
+                    taikhoan.Address = model.Address;
+                    _context.Update(taikhoan);
+                    _context.SaveChanges();
+                    _notyfService.Success("Đổi mật khẩu thành công");
+                    return RedirectToAction("Dashboard", "Accounts");
 
+                }
+            }
+            catch
+            {
+                _notyfService.Success("Thay đổi mật khẩu không thành công");
+                return RedirectToAction("Dashboard", "Accounts");
+            }
+            _notyfService.Success("Thay đổi mật khẩu không thành công");
+            return RedirectToAction("Dashboard", "Accounts");
+        }
         [HttpPost]
         public IActionResult ChangePassword(ChangePasswordViewModel model)
         {

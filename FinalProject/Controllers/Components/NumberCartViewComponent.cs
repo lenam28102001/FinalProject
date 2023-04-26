@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using FinalProject.Extension;
 using FinalProject.ModelViews;
 
-namespace WebShop.Controllers.Components
+namespace FinalProject.Controllers.Components
 {
     public class NumberCartViewComponent : ViewComponent
     {

@@ -252,6 +252,10 @@ namespace FinalProject.Models
 
                 entity.Property(e => e.PaymentId).HasColumnName("PaymentID");
 
+                entity.Property(e => e.Phone)
+                    .HasMaxLength(12)
+                    .IsFixedLength(true);
+
                 entity.Property(e => e.ShipDate).HasColumnType("datetime");
 
                 entity.Property(e => e.TransactStatusId).HasColumnName("TransactStatusID");

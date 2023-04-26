@@ -5,6 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     List<Order> DanhSachDonHang = ViewBag.DonHang;
     FinalProject.ModelViews.ChangePasswordViewModel changePassword = new FinalProject.ModelViews.ChangePasswordViewModel();
+    FinalProject.ModelViews.EditProfileViewModel editProfile = new FinalProject.ModelViews.EditProfileViewModel();
 }
 
 <main class="main-content">
@@ -38,6 +39,9 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="account-details-tab" data-bs-toggle="tab" href="#account-details" role="tab" aria-controls="account-details" aria-selected="false">Thay đổi mật khẩu</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="account-profile-tab" data-bs-toggle="tab" href="#account-profile" role="tab" aria-controls="account-profile" aria-selected="false">Thay đổi thông tin</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="account-logout-tab" href="dang-xuat.html" role="tab" aria-selected="false">Đăng xuất</a>
@@ -121,6 +125,9 @@
                         </div>
                         <div class="tab-pane fade" id="account-details" role="tabpanel" aria-labelledby="account-details-tab">
                             @await Html.PartialAsync("_ChangePasswordPartialView", changePassword)
+                        </div>
+                        <div class="tab-pane fade" id="account-profile" role="tabpanel" aria-labelledby="account-profile-tab">
+                            @await Html.PartialAsync("_EditProfilePartialView", editProfile)
                         </div>
                     </div>
                 </div>

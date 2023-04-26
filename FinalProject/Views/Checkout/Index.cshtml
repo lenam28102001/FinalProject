@@ -177,39 +177,3 @@
         </div>
     </div>
 </main>
-@*@section Scripts{
-    <script>
-    $(function () {
-    $(".xacnhandathang").click(function () {
-
-    var CustomerId = $("#CustomerId").val();
-    var FullName = $("#FullName").val();
-    var Phone = $("#Phone").val();
-    var Address = $("#Address").val();
-    //alert(CustomerId)
-    // alert(FullName)
-    // alert(Phone)
-    // alert(Address)
-    $.ajax({
-    url: "checkout.html",
-    type: "POST",
-    dataType: "JSON",
-    data: {
-    CustomerId: CustomerId,
-    FullName: FullName,
-    Phone:Phone,
-    Adress: Adress
-    },
-    success: function (result) {
-    if (result.success) {
-    location.reload();
-    }
-    },
-    error: function (rs) {
-    alert("Remove Cart Error !")
-    }
-    });
-    });
-    });
-    </script>
-    }*@

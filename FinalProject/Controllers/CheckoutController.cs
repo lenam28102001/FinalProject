@@ -79,10 +79,9 @@ namespace FinalProject.Controllers
             //Lay ra gio hang de xu ly
             var cart = HttpContext.Session.Get<List<CartItem>>("GioHang");
             var taikhoanID = HttpContext.Session.GetString("CustomerId");
-            var emailCustomer = _context.Customers.AsNoTracking().SingleOrDefault(x => x.CustomerId == Convert.ToInt32(taikhoanID));
             if (taikhoanID == null)
             {
-                return RedirectToAction("Login","Accounts", new { returnUrl = "/checkout.html" });
+                return RedirectToAction("Login", "Accounts", new { returnUrl = "/checkout.html" });
             }
             MuaHangVM model = new MuaHangVM();
             if (taikhoanID != null)
@@ -93,51 +92,46 @@ namespace FinalProject.Controllers
                 model.Email = khachhang.Email;
                 model.Phone = khachhang.Phone;
                 model.Address = khachhang.Address;
-                khachhang.Address = muaHang.Address;
-                _context.Update(khachhang);
-                _context.SaveChanges();
             }
             try
             {
-                if (ModelState.IsValid)
+                //Khoi tao don hang
+                var donhang = new Models.Order();
+                donhang.CustomerId = model.CustomerId;
+                donhang.Address = muaHang.Address;
+                donhang.Phone = muaHang.Phone;
+                donhang.OrderDate = DateTime.Now;
+                donhang.TransactStatusId = 1;//Don hang moi
+                donhang.Deleted = false;
+                donhang.Paid = false;
+                donhang.Note = Utilities.StripHTML(model.Note);
+                donhang.Totalmoney = Convert.ToInt32(cart.Sum(x => x.TotalMoney));
+                _context.Add(donhang);
+                _context.SaveChanges();
+                //tao danh sach don hang
+
+                foreach (var item in cart)
                 {
-                    //Khoi tao don hang
-                    var donhang = new Models.Order();
-                    donhang.CustomerId = model.CustomerId;
-                    donhang.Address = model.Address;
-
-                    donhang.OrderDate = DateTime.Now;
-                    donhang.TransactStatusId = 1;//Don hang moi
-                    donhang.Deleted = false;
-                    donhang.Paid = false;
-                    donhang.Note = Utilities.StripHTML(model.Note);
-                    donhang.Totalmoney = Convert.ToInt32(cart.Sum(x => x.TotalMoney));
-                    _context.Add(donhang);
-                    _context.SaveChanges();
-                    //tao danh sach don hang
-
-                    foreach (var item in cart)
-                    {
-                        OrderDetail orderDetail = new OrderDetail();
-                        orderDetail.OrderId = donhang.OrderId;
-                        orderDetail.ProductId = item.product.ProductId;
-                        orderDetail.Quantity = item.amount;
-                        orderDetail.Total = donhang.Totalmoney;
-                        orderDetail.Price = item.product.Price;
-                        orderDetail.CreateDate = DateTime.Now;
-                        _context.Add(orderDetail);
-                    }
-
-                    _context.SaveChanges();
-                    //clear gio hang
-                    HttpContext.Session.Remove("GioHang");
-                    //Xuat thong bao
-                    _notyfService.Success("Đơn hàng đặt thành công");
-                    _emailSender.SendEmailAsync(emailCustomer.Email, "Notification!", $"<main class=\"main-content\">\r\n           <div class=\"container h-100\">\r\n            <div class=\"row h-100\">\r\n                <div class=\"col-lg-12\">\r\n                    <div class=\"breadcrumb-item\">\r\n                        <h2 class=\"breadcrumb-heading\">THÔNG TIN MUA HÀNG</h2>\r\n                                                             </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <div class=\"checkout-area section-space-y-axis-100\">\r\n        <div class=\"container\">\r\n            <form>\r\n                <div class=\"row\">\r\n                    <div class=\"col-lg-6 col-12\">\r\n\r\n                        <div class=\"checkbox-form\">\r\n                            <h3>Đặt hàng thành công</h3>\r\n                            <p>Mã đơn hàng: #{donhang.OrderId}</p>\r\n                            <p>Cảm ơn bạn đã đặt hàng</p>\r\n                            <br />\r\n                            <h3>THÔNG TIN ĐƠN HÀNG</h3>\r\n                            <p>Thông tin giao hàng</p>\r\n                            <p>Người nhận hàng: {donhang.Customer.FullName}</p>\r\n                            <p>Số điện thoại: {donhang.Customer.Phone}</p>\r\n                            <p>Địa chỉ: {donhang.Address}</p>\r\n                            <br />\r\n                            Để xem chi tiết đơn hàng vui lòng truy cập vào <a asp-controller=\"Accounts\" asp-action=\"Dashboard\"><strong>Tài khoản cá nhân.</strong></a> Cần hỗ trợ? Liên hệ với chúng tôi qua số điện thoại 0123456789\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"col-lg-6 col-12\">\r\n                                          </div>\r\n                </div>\r\n            </form>\r\n\r\n        </div>\r\n    </div>\r\n</main>");
-                    _emailSender.SendEmailAsync("namlgcd191254@fpt.edu.vn", "Notification!", $"You have a new order!");
-                    //cap nhat thong tin khach hang
-                    return RedirectToAction("Success");
+                    OrderDetail orderDetail = new OrderDetail();
+                    orderDetail.OrderId = donhang.OrderId;
+                    orderDetail.ProductId = item.product.ProductId;
+                    orderDetail.Quantity = item.amount;
+                    orderDetail.Total = donhang.Totalmoney;
+                    orderDetail.Price = item.product.Price;
+                    orderDetail.CreateDate = DateTime.Now;
+                    _context.Add(orderDetail);
                 }
+                var idDonHang = _context.Orders.Include(x=>x.Customer).AsNoTracking().SingleOrDefault(x => x.OrderId == donhang.OrderId);
+                var emailCustomer = _context.Customers.AsNoTracking().SingleOrDefault(x => x.CustomerId == Convert.ToInt32(taikhoanID));
+                _context.SaveChanges();
+                //clear gio hang
+                HttpContext.Session.Remove("GioHang");
+                //Xuat thong bao
+
+                _notyfService.Success("Đơn hàng đặt thành công");
+                _emailSender.SendEmailAsync(emailCustomer.Email, "Notification!", $"<main class=\"main-content\">\r\n           <div class=\"container h-100\">\r\n            <div class=\"row h-100\">\r\n                <div class=\"col-lg-12\">\r\n                    <div class=\"breadcrumb-item\">\r\n                        <h2 class=\"breadcrumb-heading\">THÔNG TIN MUA HÀNG</h2>\r\n                                                             </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <div class=\"checkout-area section-space-y-axis-100\">\r\n        <div class=\"container\">\r\n            <form>\r\n                <div class=\"row\">\r\n                    <div class=\"col-lg-6 col-12\">\r\n\r\n                        <div class=\"checkbox-form\">\r\n                            <h3>Đặt hàng thành công</h3>\r\n                            <p>Mã đơn hàng: #{idDonHang.OrderId}</p>\r\n                            <p>Cảm ơn bạn đã đặt hàng</p>\r\n                            <br />\r\n                            <h3>THÔNG TIN ĐƠN HÀNG</h3>\r\n                            <p>Thông tin giao hàng</p>\r\n                            <p>Người nhận hàng: {idDonHang.Customer.FullName}</p>\r\n                            <p>Số điện thoại: {idDonHang.Phone}</p>\r\n                            <p>Địa chỉ: {donhang.Address}</p>\r\n                            <br />\r\n                            Để xem chi tiết đơn hàng vui lòng truy cập vào <a asp-controller=\"Accounts\" asp-action=\"Dashboard\"><strong>Tài khoản cá nhân.</strong></a> Cần hỗ trợ? Liên hệ với chúng tôi qua số điện thoại 0123456789\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"col-lg-6 col-12\">\r\n                                          </div>\r\n                </div>\r\n            </form>\r\n\r\n        </div>\r\n    </div>\r\n</main>");
+                _emailSender.SendEmailAsync("namlgcd191254@fpt.edu.vn", "Notification!", $"You have a new order!");
+                return RedirectToAction("Success");
             }
             catch
             {
@@ -145,9 +139,6 @@ namespace FinalProject.Controllers
                 ViewBag.GioHang = cart;
                 return View(model);
             }
-            ViewData["lsTinhThanh"] = new SelectList(_context.Locations.Where(x => x.Levels == 1).OrderBy(x => x.Type).ToList(), "Location", "Name");
-            ViewBag.GioHang = cart;
-            return View(model);
         }
         [Route("paypal-checkout.html", Name = "Paypal")]
         [Authorize]
@@ -237,10 +228,10 @@ namespace FinalProject.Controllers
                     {
                         //saving the payapalredirect URL to which user will be redirected for payment  
                         paypalRedirectUrl = lnk.Href;
-                        
+
                     }
                 }
-               
+
                 return Redirect(paypalRedirectUrl);
             }
             catch (HttpException httpException)
@@ -270,8 +261,6 @@ namespace FinalProject.Controllers
                 model.Email = khachhang.Email;
                 model.Phone = khachhang.Phone;
                 model.Address = khachhang.Address;
-                _context.Update(khachhang);
-                _context.SaveChanges();
             }
             try
             {
@@ -281,6 +270,7 @@ namespace FinalProject.Controllers
                     var donhang = new Models.Order();
                     donhang.CustomerId = model.CustomerId;
                     donhang.Address = model.Address;
+                    donhang.Phone = model.Phone;
                     donhang.OrderDate = DateTime.Now;
                     donhang.TransactStatusId = 2;
                     donhang.Deleted = false;
@@ -303,13 +293,14 @@ namespace FinalProject.Controllers
                         _context.Add(orderDetail);
                     }
                     var emailCustomer = _context.Customers.AsNoTracking().SingleOrDefault(x => x.CustomerId == Convert.ToInt32(taikhoanID));
+                    var idDonHang = _context.Orders.Include(x => x.Customer).AsNoTracking().SingleOrDefault(x => x.OrderId == donhang.OrderId);
 
                     _context.SaveChanges();
                     //clear gio hang
                     HttpContext.Session.Remove("GioHang");
                     //Xuat thong bao
                     _notyfService.Success("Đơn hàng đặt thành công");
-                    _emailSender.SendEmailAsync(emailCustomer.Email, "Notification!", $"<main class=\"main-content\">\r\n           <div class=\"container h-100\">\r\n            <div class=\"row h-100\">\r\n                <div class=\"col-lg-12\">\r\n                    <div class=\"breadcrumb-item\">\r\n                        <h2 class=\"breadcrumb-heading\">THÔNG TIN MUA HÀNG</h2>\r\n                                                             </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <div class=\"checkout-area section-space-y-axis-100\">\r\n        <div class=\"container\">\r\n            <form>\r\n                <div class=\"row\">\r\n                    <div class=\"col-lg-6 col-12\">\r\n\r\n                        <div class=\"checkbox-form\">\r\n                            <h3>Đặt hàng thành công</h3>\r\n                            <p>Mã đơn hàng: #{donhang.OrderId}</p>\r\n                            <p>Cảm ơn bạn đã đặt hàng</p>\r\n                            <br />\r\n                            <h3>THÔNG TIN ĐƠN HÀNG</h3>\r\n                            <p>Thông tin giao hàng</p>\r\n                            <p>Người nhận hàng: {donhang.Customer.FullName}</p>\r\n                            <p>Số điện thoại: {donhang.Customer.Phone}</p>\r\n                            <p>Địa chỉ: {donhang.Address}</p>\r\n                            <br />\r\n                            Để xem chi tiết đơn hàng vui lòng truy cập vào <a asp-controller=\"Accounts\" asp-action=\"Dashboard\"><strong>Tài khoản cá nhân.</strong></a> Cần hỗ trợ? Liên hệ với chúng tôi qua số điện thoại 0123456789\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"col-lg-6 col-12\">\r\n                                          </div>\r\n                </div>\r\n            </form>\r\n\r\n        </div>\r\n    </div>\r\n</main>");
+                    _emailSender.SendEmailAsync(emailCustomer.Email, "Notification!", $"<main class=\"main-content\">\r\n           <div class=\"container h-100\">\r\n            <div class=\"row h-100\">\r\n                <div class=\"col-lg-12\">\r\n                    <div class=\"breadcrumb-item\">\r\n                        <h2 class=\"breadcrumb-heading\">THÔNG TIN MUA HÀNG</h2>\r\n                                                             </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <div class=\"checkout-area section-space-y-axis-100\">\r\n        <div class=\"container\">\r\n            <form>\r\n                <div class=\"row\">\r\n                    <div class=\"col-lg-6 col-12\">\r\n\r\n                        <div class=\"checkbox-form\">\r\n                            <h3>Đặt hàng thành công</h3>\r\n                            <p>Mã đơn hàng: #{donhang.OrderId}</p>\r\n                            <p>Cảm ơn bạn đã đặt hàng</p>\r\n                            <br />\r\n                            <h3>THÔNG TIN ĐƠN HÀNG</h3>\r\n                            <p>Thông tin giao hàng</p>\r\n                            <p>Người nhận hàng: {idDonHang.Customer.FullName}</p>\r\n                            <p>Số điện thoại: {idDonHang.Phone}</p>\r\n                            <p>Địa chỉ: {idDonHang.Address}</p>\r\n                            <br />\r\n                            Để xem chi tiết đơn hàng vui lòng truy cập vào <a asp-controller=\"Accounts\" asp-action=\"Dashboard\"><strong>Tài khoản cá nhân.</strong></a> Cần hỗ trợ? Liên hệ với chúng tôi qua số điện thoại 0123456789\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"col-lg-6 col-12\">\r\n                                          </div>\r\n                </div>\r\n            </form>\r\n\r\n        </div>\r\n    </div>\r\n</main>");
                     _emailSender.SendEmailAsync("namlgcd191254@fpt.edu.vn", "Notification!", $"You have a new order!");
                     //cap nhat thong tin khach hang
                 }
@@ -321,9 +312,8 @@ namespace FinalProject.Controllers
                 MuaHangSuccessVM successVM = new MuaHangSuccessVM();
                 successVM.FullName = khachhang.FullName;
                 successVM.DonHangID = dataOrder.OrderId;
-                successVM.Phone = khachhang.Phone;
-                successVM.Address = khachhang.Address;
-
+                successVM.Phone = dataOrder.Phone;
+                successVM.Address = dataOrder.Address;
                 return View(successVM);
             }
             catch
@@ -351,8 +341,8 @@ namespace FinalProject.Controllers
                 MuaHangSuccessVM successVM = new MuaHangSuccessVM();
                 successVM.FullName = khachhang.FullName;
                 successVM.DonHangID = donhang.OrderId;
-                successVM.Phone = khachhang.Phone;
-                successVM.Address = khachhang.Address;
+                successVM.Phone = donhang.Phone;
+                successVM.Address = donhang.Address;
                 return View(successVM);
             }
             catch
