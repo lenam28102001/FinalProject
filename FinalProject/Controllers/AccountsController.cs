@@ -118,8 +118,8 @@ namespace FinalProject.Controllers
                         _context.Add(khachhang);
                         await _context.SaveChangesAsync();
                         //Lưu Session MaKh
-                        HttpContext.Session.SetString("CustomerId", khachhang.CustomerId.ToString());
-                        var taikhoanID = HttpContext.Session.GetString("CustomerId");
+                        //HttpContext.Session.SetString("CustomerId", khachhang.CustomerId.ToString());
+                        //var taikhoanID = HttpContext.Session.GetString("CustomerId");
 
                         //Identity
                         var claims = new List<Claim>
@@ -131,7 +131,7 @@ namespace FinalProject.Controllers
                         ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                         await HttpContext.SignInAsync(claimsPrincipal);
                         _notyfService.Success("Đăng ký thành công");
-                        return RedirectToAction("Dashboard", "Accounts");
+                        return RedirectToAction("Login", "Accounts");
                     }
                     catch
                     {
@@ -239,21 +239,13 @@ namespace FinalProject.Controllers
                 {
                     var taikhoan = _context.Customers.Find(Convert.ToInt32(taikhoanID));
                     if (taikhoan == null) { return RedirectToAction("Login", "Accounts"); }
-                    else
-                    {
-                        var cusProfile = _context.Customers.AsNoTracking().SingleOrDefault(x => x.CustomerId == Convert.ToInt32(taikhoanID));
-                        model.FullName = cusProfile.FullName;
-                        model.Email = cusProfile.Email;
-                        model.Phone = cusProfile.Phone;
-                        model.Address = cusProfile.Address;
-                    }
                     taikhoan.FullName = model.FullName;
                     taikhoan.Email = model.Email;
                     taikhoan.Phone = model.Phone;
                     taikhoan.Address = model.Address;
                     _context.Update(taikhoan);
                     _context.SaveChanges();
-                    _notyfService.Success("Đổi mật khẩu thành công");
+                    _notyfService.Success("Thay đổi thông tin thành công!");
                     return RedirectToAction("Dashboard", "Accounts");
 
                 }

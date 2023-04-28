@@ -150,6 +150,8 @@ namespace FinalProject.Areas.Admin.Controllers
             {
                 try
                 {
+                    string passnew = (account.Password.Trim() + account.Salt.Trim()).ToMD5();
+                    account.Password = passnew;
                     _context.Update(account);
                     await _context.SaveChangesAsync();
                 }
@@ -164,6 +166,7 @@ namespace FinalProject.Areas.Admin.Controllers
                         throw;
                     }
                 }
+                _notyfService.Success("Chỉnh sửa thông tin thành công");
                 return RedirectToAction(nameof(Index));
             }
             ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleName", account.RoleId);
@@ -197,6 +200,7 @@ namespace FinalProject.Areas.Admin.Controllers
             var account = await _context.Accounts.FindAsync(id);
             _context.Accounts.Remove(account);
             await _context.SaveChangesAsync();
+            _notyfService.Success("Xóa thành công");
             return RedirectToAction(nameof(Index));
         }
 

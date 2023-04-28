@@ -94,6 +94,7 @@ namespace FinalProject.Areas.Admin.Controllers
                     var grandmaIdentity = new ClaimsIdentity(userClaims, "User Identity");
                     var userPrincipal = new ClaimsPrincipal(new[] { grandmaIdentity });
                     await HttpContext.SignInAsync(userPrincipal);
+                    _notyfService.Success("Đăng Nhập thành công");
                     return RedirectToAction("Index", "Home", new { Area = "Admin" });
                 }
             }

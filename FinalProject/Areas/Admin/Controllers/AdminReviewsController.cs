@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FinalProject.Models;
 using PagedList.Core;
+using AspNetCoreHero.ToastNotification.Abstractions;
 
 namespace FinalProject.Areas.Admin.Controllers
 {
@@ -14,10 +15,12 @@ namespace FinalProject.Areas.Admin.Controllers
     public class AdminReviewsController : Controller
     {
         private readonly FinalProjectContext _context;
+        public INotyfService _notyfService { get; }
 
-        public AdminReviewsController(FinalProjectContext context)
+        public AdminReviewsController(FinalProjectContext context, INotyfService notyfService)
         {
             _context = context;
+            _notyfService = notyfService;
         }
 
         // GET: Admin/AdminReviews
@@ -59,8 +62,8 @@ namespace FinalProject.Areas.Admin.Controllers
         // GET: Admin/AdminReviews/Create
         public IActionResult Create()
         {
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "CustomerId");
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductId");
+            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "FullName");
+            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName");
             return View();
         }
 
@@ -75,10 +78,11 @@ namespace FinalProject.Areas.Admin.Controllers
             {
                 _context.Add(review);
                 await _context.SaveChangesAsync();
+                _notyfService.Success("Thêm mới đánh giá thành công");
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "CustomerId", review.CustomerId);
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductId", review.ProductId);
+            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "FullName", review.CustomerId);
+            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName", review.ProductId);
             return View(review);
         }
 
@@ -95,8 +99,8 @@ namespace FinalProject.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "CustomerId", review.CustomerId);
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductId", review.ProductId);
+            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "FullName", review.CustomerId);
+            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName", review.ProductId);
             return View(review);
         }
 
@@ -130,10 +134,11 @@ namespace FinalProject.Areas.Admin.Controllers
                         throw;
                     }
                 }
+                _notyfService.Success("Chỉnh sửa đánh giá thành công");
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "CustomerId", review.CustomerId);
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductId", review.ProductId);
+            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "FullName", review.CustomerId);
+            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName", review.ProductId);
             return View(review);
         }
 
@@ -165,6 +170,7 @@ namespace FinalProject.Areas.Admin.Controllers
             var review = await _context.Reviews.FindAsync(id);
             _context.Reviews.Remove(review);
             await _context.SaveChangesAsync();
+            _notyfService.Success("Xóa đánh giá thành công");
             return RedirectToAction(nameof(Index));
         }
 

@@ -158,9 +158,24 @@ namespace FinalProject.Areas.Admin.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var customer = await _context.Customers.FindAsync(id);
+            var lsOrder = _context.Orders.Where(x=>x.CustomerId==customer.CustomerId).ToList();
+            foreach (var item in lsOrder)
+            {
+                var lsOrderDetail =  _context.OrderDetails.Where(x=>x.OrderId==item.OrderId).ToList();
+                foreach (var itemOrderId in lsOrderDetail)
+                {
+                    _context.OrderDetails.Remove(itemOrderId);
+                }
+                _context.Orders.Remove(item);
+            }
+            var lsReview = _context.Reviews.Where(x => x.CustomerId == customer.CustomerId).ToList();
+            foreach (var item in lsReview)
+            {
+                _context.Reviews.Remove(item);
+            }
             _context.Customers.Remove(customer);
             await _context.SaveChangesAsync();
-            _notyfService.Success("Xóa thành công");
+            _notyfService.Success("Xóa khách hàng thành công");
             return RedirectToAction(nameof(Index));
         }
 

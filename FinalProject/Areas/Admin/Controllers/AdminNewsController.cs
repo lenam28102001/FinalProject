@@ -42,7 +42,7 @@ namespace FinalProject.Areas.Admin.Controllers
             var pageSize = 20;
             var lsNews = _context.News
                 .AsNoTracking()
-                .OrderBy(x => x.IsNewfeed);
+                .OrderByDescending(x => x.CreatedDate);
             PagedList<News> models = new PagedList<News>(lsNews, pageNumber, pageSize);
 
             ViewBag.CurrentPage = pageNumber;

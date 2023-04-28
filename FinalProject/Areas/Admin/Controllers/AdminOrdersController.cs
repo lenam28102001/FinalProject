@@ -40,8 +40,6 @@ namespace WebShop.Areas.Admin.Controllers
 
             ViewBag.CurrentPage = pageNumber;
 
-
-
             return View(models);
         }
 
@@ -92,7 +90,7 @@ namespace WebShop.Areas.Admin.Controllers
             return PartialView("ChangeStatus", order);
         }
         [HttpPost]
-        public async Task<IActionResult> ChangeStatus(int id, [Bind("OrderId,CustomerId,OrderDate,ShipDate,TransactStatusId,Deleted,Paid,PaymentDate,Totalmoney,PaymentId,Note,Address,LocationId,District,Ward")] Order order)
+        public async Task<IActionResult> ChangeStatus(int id, [Bind("OrderId,CustomerId,OrderDate,ShipDate,TransactStatusId,Deleted,Paid,PaymentDate,TotalMoney,PaymentId,Note,Address,LocationId,District,Ward")] Order order)
         {
             if (id != order.OrderId)
             {
@@ -112,8 +110,7 @@ namespace WebShop.Areas.Admin.Controllers
                         {
                             donhang.PaymentDate = DateTime.Now;
                         }
-                        if (donhang.TransactStatusId == 1) donhang.Deleted = true;
-                        if (donhang.TransactStatusId == 1) donhang.ShipDate = DateTime.Now;
+                        if (donhang.TransactStatusId == 1004) donhang.Deleted = true; 
                     }
                     _context.Update(donhang);
                     await _context.SaveChangesAsync();
@@ -141,7 +138,7 @@ namespace WebShop.Areas.Admin.Controllers
         public IActionResult Create()
         {
             ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "CustomerId");
-            ViewData["TransactStatusId"] = new SelectList(_context.TransactStatuses, "TransactStatusId", "TransactStatusId");
+            ViewData["TransactStatusId"] = new SelectList(_context.TransactStatuses, "TransactStatusId", "Status");
             return View();
         }
 
@@ -159,7 +156,7 @@ namespace WebShop.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "CustomerId", order.CustomerId);
-            ViewData["TransactStatusId"] = new SelectList(_context.TransactStatuses, "TransactStatusId", "TransactStatusId", order.TransactStatusId);
+            ViewData["TransactStatusId"] = new SelectList(_context.TransactStatuses, "TransactStatusId", "Status", order.TransactStatusId);
             return View(order);
         }
 
@@ -177,7 +174,7 @@ namespace WebShop.Areas.Admin.Controllers
                 return NotFound();
             }
             ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "CustomerId", order.CustomerId);
-            ViewData["TransactStatusId"] = new SelectList(_context.TransactStatuses, "TransactStatusId", "TransactStatusId", order.TransactStatusId);
+            ViewData["TransactStatusId"] = new SelectList(_context.TransactStatuses, "TransactStatusId", "Status", order.TransactStatusId);
             return View(order);
         }
 
@@ -211,10 +208,11 @@ namespace WebShop.Areas.Admin.Controllers
                         throw;
                     }
                 }
+                _notyfService.Success("Chỉnh sửa đơn hàng thành công!");
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "CustomerId", order.CustomerId);
-            ViewData["TransactStatusId"] = new SelectList(_context.TransactStatuses, "TransactStatusId", "TransactStatusId", order.TransactStatusId);
+            ViewData["TransactStatusId"] = new SelectList(_context.TransactStatuses, "TransactStatusId", "Status", order.TransactStatusId);
             return View(order);
         }
 
