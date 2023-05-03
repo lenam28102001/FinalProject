@@ -240,7 +240,6 @@ namespace FinalProject.Controllers
                     var taikhoan = _context.Customers.Find(Convert.ToInt32(taikhoanID));
                     if (taikhoan == null) { return RedirectToAction("Login", "Accounts"); }
                     taikhoan.FullName = model.FullName;
-                    taikhoan.Email = model.Email;
                     taikhoan.Phone = model.Phone;
                     taikhoan.Address = model.Address;
                     _context.Update(taikhoan);

@@ -15,12 +15,7 @@ namespace FinalProject.ModelViews
         [Display(Name = "Địa chỉ")]
         [Required(ErrorMessage = "Vui lòng nhập Địa chỉ")]
         public string Address { get; set; } 
-
-        [MaxLength(150)]
-        [Required(ErrorMessage = "Vui lòng nhập Email")]
-        [DataType(DataType.EmailAddress)]
-        [Remote(action: "ValidateEmail", controller: "Accounts")]
-        public string Email { get; set; }
+ 
 
         [MaxLength(11)]
         [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
